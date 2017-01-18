@@ -3,25 +3,24 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
+
+#define RABBIT 0
+#define CAT 1
+#define DOG 2
+#define HORSE 3
+#define CAMMEL 4
+#define ELEPHANT 5
+
 
 struct Board{
-    unsigned long long gRabbit;
-    unsigned long long gCat;
-    unsigned long long gDog;
-    unsigned long long gHorse;
-    unsigned long long gCammel;
-    unsigned long long gElephant;
-    unsigned long long sRabbit;
-    unsigned long long sCat;
-    unsigned long long sDog;
-    unsigned long long sHorse;
-    unsigned long long sCammel;
-    unsigned long long sElephant;
-    unsigned long long empty;
+    uint64_t gold[6];
+    uint64_t silver[6];
+    uint64_t empty;
 };
 
-struct Board makeBoard(char *filepath);
-int printBoard(Board *b);
-int makeMove(char *move, Board *b);
+struct Board *makeBoard(char *filepath);
+int printBoard(struct Board *b);
+int makeMove(char *move, struct Board *b);
 
 #endif

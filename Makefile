@@ -1,14 +1,16 @@
 CC=gcc
-
 CFLAGS=-Wall -std=c99 -g
 
 .PHONY: all clean
 
 all: arimaa
 
-KonanAI: arimaa.c game.o
+test: test.c game.o
+
+arimaa: arimaa.c game.o
 
 game.o: game.c game.h
 
 clean:
-	rm *.o KonanAI
+	rm *.o arimaa
+
