@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <inttypes.h>
 
 #define RABBIT 0
 #define CAT 1
@@ -14,9 +15,9 @@
 
 
 struct Board{
-    uint64_t gold[6];
-    uint64_t silver[6];
-    uint64_t empty;
+    unsigned long long int gold[6];
+    unsigned long long int silver[6];
+    unsigned long long int empty;
 };
 
 struct Board *makeBoard(char *filepath);

@@ -6,7 +6,6 @@ struct Board *makeBoard(char *filepath){
         for(int i = 0; i < 6; i++){
             b->gold[i] = 0;
             b->silver[i] = 0;
-        
         }
         b->empty = ~0; 
     }
@@ -19,10 +18,9 @@ struct Board *makeBoard(char *filepath){
 int printBoard(struct Board *b){
     printf("+--------+\n");
     for (int shift = 0; shift < 64; shift++){
-        int i = 1<<shift;
+        uint64_t i = 1L <<shift;
         if (shift%8 == 0)
             printf("|");
-
         if ((i & b->gold[RABBIT]) == i)
             printf("R");
         else if ((i & b->silver[RABBIT]) == i)
@@ -55,7 +53,7 @@ int printBoard(struct Board *b){
         }
 
         if (shift%8 == 7)
-            printf("|\n"); 
+            printf("|\n");
     }
     printf("+--------+\n");
 	return 0;
