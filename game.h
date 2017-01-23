@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdint.h>
 #include <inttypes.h>
 
@@ -15,9 +16,9 @@
 
 
 struct Board{
-    unsigned long long int gold[6];
-    unsigned long long int silver[6];
-    unsigned long long int empty;
+    uint64_t gold[6];
+    uint64_t silver[6];
+    uint64_t empty;
 };
 
 struct Board *makeBoard(char *filepath);
