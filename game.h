@@ -23,6 +23,6 @@ struct Board{
 
 struct Board *makeBoard(char *filepath);
 int printBoard(struct Board *b);
-int makeMove(char *move, struct Board *b);
+int updateBoard(char *move, struct Board *b);
 
 #endif

@@ -60,7 +60,7 @@ int printBoard(struct Board *b){
 	return 0;
 }
 
-int makeMove(char *move, struct Board *b){
+int updateBoard(char *move, struct Board *b){
     char *colLetters = "abcdefgh";   
     char *rowNumbers = "87654321";
     if (strlen(move) == 63){
@@ -114,7 +114,7 @@ int makeMove(char *move, struct Board *b){
                     b->empty ^= 1L << ((8*j) + i);
                     break;
                 case 'e':
-                    b->gold[ELEPHANT] ^= 1L << ((8*j) + i);
+                    b->silver[ELEPHANT] ^= 1L << ((8*j) + i);
                     b->empty ^= 1L << ((8*j) + i);
                     break;
                 default:
