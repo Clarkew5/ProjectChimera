@@ -3,13 +3,19 @@ CFLAGS=-Wall -std=c99 -g
 
 .PHONY: all clean
 
-all: arimaa
+all: make
 
-test: test.c game.o
+test: test.o game.o
 
-arimaa: arimaa.c game.o
+test.o: test.c
+
+arimaa: arimaa.o game.o algo.o
+
+arimaa.o: arima.c
 
 game.o: game.c game.h
+
+algo.o: algo.c algo.h
 
 clean:
 	rm *.o arimaa

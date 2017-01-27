@@ -1,50 +1,55 @@
 #include "game.h"
 
-struct Board *makeBoard(char *filepath){
-    struct Board *b = malloc(sizeof(struct Board));    
+struct Board ARIMAABOARD = {
+    .gold = {0L, 0L, 0L, 0L, 0L, 0L},
+    .silver = {0L, 0L, 0L, 0L, 0L, 0L},
+    .empty = 0L};
+
+int makeBoard(char *filepath){
+    //struct Board *ARIMAABOARD = malloc(sizeof(struct Board));   
     if (filepath == NULL){    
         for (int i = 0; i < 6; i++){
-            b->gold[i] = 0;
-            b->silver[i] = 0;
+            ARIMAABOARD.gold[i] = 0;
+            ARIMAABOARD.silver[i] = 0;
         }
-        b->empty = ~0; 
+        ARIMAABOARD.empty = ~0; 
     }
     else{
         //insert building a board form text file
     }
-	return b;
+    return 0;
 }
 
-int printBoard(struct Board *b){
+int printBoard(){
     printf(" +----------------+\n");
     for (int shift = 0; shift < 64; shift++){
         uint64_t i = 1L <<shift;
         if (shift%8 == 0)
             printf("%d| ", (8 - (shift/8)));
 
-        if ((i & b->gold[RABBIT]) == i)
+        if ((i & ARIMAABOARD.gold[RABBIT]) == i)
             printf("R ");
-        else if ((i & b->silver[RABBIT]) == i)
+        else if ((i & ARIMAABOARD.silver[RABBIT]) == i)
             printf("r ");
-        else if ((i & b->gold[CAT]) == i)
+        else if ((i & ARIMAABOARD.gold[CAT]) == i)
             printf("C ");
-        else if ((i & b->silver[CAT]) == i)
+        else if ((i & ARIMAABOARD.silver[CAT]) == i)
             printf("c ");
-        else if ((i & b->gold[DOG]) == i)
+        else if ((i & ARIMAABOARD.gold[DOG]) == i)
             printf("D ");
-        else if ((i & b->silver[DOG]) == i)
+        else if ((i & ARIMAABOARD.silver[DOG]) == i)
             printf("d ");
-        else if ((i & b->gold[HORSE]) == i)
+        else if ((i & ARIMAABOARD.gold[HORSE]) == i)
             printf("H ");
-        else if ((i & b->silver[HORSE]) == i)
+        else if ((i & ARIMAABOARD.silver[HORSE]) == i)
             printf("h ");
-        else if ((i & b->gold[CAMMEL]) == i)
+        else if ((i & ARIMAABOARD.gold[CAMMEL]) == i)
             printf("M ");
-        else if ((i & b->silver[CAMMEL]) == i)
+        else if ((i & ARIMAABOARD.silver[CAMMEL]) == i)
             printf("m ");
-        else if ((i & b->gold[ELEPHANT]) == i)
+        else if ((i & ARIMAABOARD.gold[ELEPHANT]) == i)
             printf("E ");
-        else if ((i & b->silver[ELEPHANT]) == i)
+        else if ((i & ARIMAABOARD.silver[ELEPHANT]) == i)
             printf("e ");
         else{
             if (shift == 18 || shift == 21 || shift == 42 || shift == 45)
@@ -60,7 +65,7 @@ int printBoard(struct Board *b){
 	return 0;
 }
 
-int updateBoard(char *move, struct Board *b){
+int updateBoard(char *move){
     char *colLetters = "abcdefgh";   
     char *rowNumbers = "87654321";
     if (strlen(move) == 63){
@@ -70,52 +75,52 @@ int updateBoard(char *move, struct Board *b){
             int j = strchr(rowNumbers, *(move+2)) - rowNumbers;        
             switch (*move){
                 case 'R':
-                    b->gold[RABBIT] ^= 1L << ((8*j) + i);
-                    b->empty ^= 1L << ((8*j) + i);
+                    ARIMAABOARD.gold[RABBIT] ^= 1L << ((8*j) + i);
+                    ARIMAABOARD.empty ^= 1L << ((8*j) + i);
                     break;
                 case 'r':
-                    b->silver[RABBIT] ^= 1L << ((8*j) + i);
-                    b->empty ^= 1L << ((8*j) + i);
+                    ARIMAABOARD.silver[RABBIT] ^= 1L << ((8*j) + i);
+                    ARIMAABOARD.empty ^= 1L << ((8*j) + i);
                     break;
                 case 'C':
-                    b->gold[CAT] ^= 1L << ((8*j) + i);
-                    b->empty ^= 1L << ((8*j) + i);
+                    ARIMAABOARD.gold[CAT] ^= 1L << ((8*j) + i);
+                    ARIMAABOARD.empty ^= 1L << ((8*j) + i);
                     break;
                 case 'c':
-                    b->silver[CAT] ^= 1L << ((8*j) + i);
-                    b->empty ^= 1L << ((8*j) + i);
+                    ARIMAABOARD.silver[CAT] ^= 1L << ((8*j) + i);
+                    ARIMAABOARD.empty ^= 1L << ((8*j) + i);
                     break;
                 case 'D':
-                    b->gold[DOG] ^= 1L << ((8*j) + i);
-                    b->empty ^= 1L << ((8*j) + i);
+                    ARIMAABOARD.gold[DOG] ^= 1L << ((8*j) + i);
+                    ARIMAABOARD.empty ^= 1L << ((8*j) + i);
                     break;
                 case 'd':
-                    b->silver[DOG] ^= 1L << ((8*j) + i);
-                    b->empty ^= 1L << ((8*j) + i);
+                    ARIMAABOARD.silver[DOG] ^= 1L << ((8*j) + i);
+                    ARIMAABOARD.empty ^= 1L << ((8*j) + i);
                     break;
                 case 'H':
-                    b->gold[HORSE] ^= 1L << ((8*j) + i);
-                    b->empty ^= 1L << ((8*j) + i);
+                    ARIMAABOARD.gold[HORSE] ^= 1L << ((8*j) + i);
+                    ARIMAABOARD.empty ^= 1L << ((8*j) + i);
                     break;
                 case 'h':
-                    b->silver[HORSE] ^= 1L << ((8*j) + i);
-                    b->empty ^= 1L << ((8*j) + i);
+                    ARIMAABOARD.silver[HORSE] ^= 1L << ((8*j) + i);
+                    ARIMAABOARD.empty ^= 1L << ((8*j) + i);
                     break;
                 case 'M':
-                    b->gold[CAMMEL] ^= 1L << ((8*j) + i);
-                    b->empty ^= 1L << ((8*j) + i);
+                    ARIMAABOARD.gold[CAMMEL] ^= 1L << ((8*j) + i);
+                    ARIMAABOARD.empty ^= 1L << ((8*j) + i);
                     break;
                 case 'm':
-                    b->silver[CAMMEL] ^= 1L << ((8*j) + i);
-                    b->empty ^= 1L << ((8*j) + i);
+                    ARIMAABOARD.silver[CAMMEL] ^= 1L << ((8*j) + i);
+                    ARIMAABOARD.empty ^= 1L << ((8*j) + i);
                     break;
                 case 'E':
-                    b->gold[ELEPHANT] ^= 1L << ((8*j) + i);
-                    b->empty ^= 1L << ((8*j) + i);
+                    ARIMAABOARD.gold[ELEPHANT] ^= 1L << ((8*j) + i);
+                    ARIMAABOARD.empty ^= 1L << ((8*j) + i);
                     break;
                 case 'e':
-                    b->silver[ELEPHANT] ^= 1L << ((8*j) + i);
-                    b->empty ^= 1L << ((8*j) + i);
+                    ARIMAABOARD.silver[ELEPHANT] ^= 1L << ((8*j) + i);
+                    ARIMAABOARD.empty ^= 1L << ((8*j) + i);
                     break;
                 default:
                     printf("error no such peice\n");
@@ -155,76 +160,76 @@ int updateBoard(char *move, struct Board *b){
             }        
             switch (*move){
                 case 'R':
-                    b->gold[RABBIT] ^= 1L << ((8*j1) + i1);
-                    b->empty ^= 1L << ((8*j1) + i1);
-                    b->gold[RABBIT] ^= 1L << ((8*j2) + i2);
-                    b->empty ^= 1L << ((8*j2) + i2);                    
+                    ARIMAABOARD.gold[RABBIT] ^= 1L << ((8*j1) + i1);
+                    ARIMAABOARD.empty ^= 1L << ((8*j1) + i1);
+                    ARIMAABOARD.gold[RABBIT] ^= 1L << ((8*j2) + i2);
+                    ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);                    
                     break;
                 case 'r':
-                    b->silver[RABBIT] ^= 1L << ((8*j1) + i1);
-                    b->empty ^= 1L << ((8*j1) + i1);
-                    b->silver[RABBIT] ^= 1L << ((8*j2) + i2);
-                    b->empty ^= 1L << ((8*j2) + i2);
+                    ARIMAABOARD.silver[RABBIT] ^= 1L << ((8*j1) + i1);
+                    ARIMAABOARD.empty ^= 1L << ((8*j1) + i1);
+                    ARIMAABOARD.silver[RABBIT] ^= 1L << ((8*j2) + i2);
+                    ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
                     break;
                 case 'C':
-                    b->gold[CAT] ^= 1L << ((8*j1) + i1);
-                    b->empty ^= 1L << ((8*j1) + i1);
-                    b->gold[CAT] ^= 1L << ((8*j2) + i2);
-                    b->empty ^= 1L << ((8*j2) + i2);                    
+                    ARIMAABOARD.gold[CAT] ^= 1L << ((8*j1) + i1);
+                    ARIMAABOARD.empty ^= 1L << ((8*j1) + i1);
+                    ARIMAABOARD.gold[CAT] ^= 1L << ((8*j2) + i2);
+                    ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);                    
                     break;
                 case 'c':
-                    b->silver[CAT] ^= 1L << ((8*j1) + i1);
-                    b->empty ^= 1L << ((8*j1) + i1);
-                    b->silver[CAT] ^= 1L << ((8*j2) + i2);
-                    b->empty ^= 1L << ((8*j2) + i2);
+                    ARIMAABOARD.silver[CAT] ^= 1L << ((8*j1) + i1);
+                    ARIMAABOARD.empty ^= 1L << ((8*j1) + i1);
+                    ARIMAABOARD.silver[CAT] ^= 1L << ((8*j2) + i2);
+                    ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
                     break;
                 case 'D':
-                    b->gold[DOG] ^= 1L << ((8*j1) + i1);
-                    b->empty ^= 1L << ((8*j1) + i1);
-                    b->gold[DOG] ^= 1L << ((8*j2) + i2);
-                    b->empty ^= 1L << ((8*j2) + i2);
+                    ARIMAABOARD.gold[DOG] ^= 1L << ((8*j1) + i1);
+                    ARIMAABOARD.empty ^= 1L << ((8*j1) + i1);
+                    ARIMAABOARD.gold[DOG] ^= 1L << ((8*j2) + i2);
+                    ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
                     break;
                 case 'd':
-                    b->silver[DOG] ^= 1L << ((8*j1) + i1);
-                    b->empty ^= 1L << ((8*j1) + i1);
-                    b->silver[DOG] ^= 1L << ((8*j2) + i2);
-                    b->empty ^= 1L << ((8*j2) + i2);
+                    ARIMAABOARD.silver[DOG] ^= 1L << ((8*j1) + i1);
+                    ARIMAABOARD.empty ^= 1L << ((8*j1) + i1);
+                    ARIMAABOARD.silver[DOG] ^= 1L << ((8*j2) + i2);
+                    ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
                     break;
                 case 'H':
-                    b->gold[HORSE] ^= 1L << ((8*j1) + i1);
-                    b->empty ^= 1L << ((8*j1) + i1);
-                    b->gold[HORSE] ^= 1L << ((8*j2) + i2);
-                    b->empty ^= 1L << ((8*j2) + i2);
+                    ARIMAABOARD.gold[HORSE] ^= 1L << ((8*j1) + i1);
+                    ARIMAABOARD.empty ^= 1L << ((8*j1) + i1);
+                    ARIMAABOARD.gold[HORSE] ^= 1L << ((8*j2) + i2);
+                    ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
                     break;
                 case 'h':
-                    b->silver[HORSE] ^= 1L << ((8*j1) + i1);
-                    b->empty ^= 1L << ((8*j1) + i1);
-                    b->silver[HORSE] ^= 1L << ((8*j2) + i2);
-                    b->empty ^= 1L << ((8*j2) + i2);
+                    ARIMAABOARD.silver[HORSE] ^= 1L << ((8*j1) + i1);
+                    ARIMAABOARD.empty ^= 1L << ((8*j1) + i1);
+                    ARIMAABOARD.silver[HORSE] ^= 1L << ((8*j2) + i2);
+                    ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
                     break;
                 case 'M':
-                    b->gold[CAMMEL] ^= 1L << ((8*j1) + i1);
-                    b->empty ^= 1L << ((8*j1) + i1);
-                    b->gold[CAMMEL] ^= 1L << ((8*j2) + i2);
-                    b->empty ^= 1L << ((8*j2) + i2);
+                    ARIMAABOARD.gold[CAMMEL] ^= 1L << ((8*j1) + i1);
+                    ARIMAABOARD.empty ^= 1L << ((8*j1) + i1);
+                    ARIMAABOARD.gold[CAMMEL] ^= 1L << ((8*j2) + i2);
+                    ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
                     break;
                 case 'm':
-                    b->silver[CAMMEL] ^= 1L << ((8*j1) + i1);
-                    b->empty ^= 1L << ((8*j1) + i1);
-                    b->silver[CAMMEL] ^= 1L << ((8*j2) + i2);
-                    b->empty ^= 1L << ((8*j2) + i2);
+                    ARIMAABOARD.silver[CAMMEL] ^= 1L << ((8*j1) + i1);
+                    ARIMAABOARD.empty ^= 1L << ((8*j1) + i1);
+                    ARIMAABOARD.silver[CAMMEL] ^= 1L << ((8*j2) + i2);
+                    ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
                     break;
                 case 'E':
-                    b->gold[ELEPHANT] ^= 1L << ((8*j1) + i1);
-                    b->empty ^= 1L << ((8*j1) + i1);
-                    b->gold[ELEPHANT] ^= 1L << ((8*j2) + i2);
-                    b->empty ^= 1L << ((8*j2) + i2);
+                    ARIMAABOARD.gold[ELEPHANT] ^= 1L << ((8*j1) + i1);
+                    ARIMAABOARD.empty ^= 1L << ((8*j1) + i1);
+                    ARIMAABOARD.gold[ELEPHANT] ^= 1L << ((8*j2) + i2);
+                    ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
                     break;
                 case 'e':
-                    b->silver[ELEPHANT] ^= 1L << ((8*j1) + i1);
-                    b->empty ^= 1L << ((8*j1) + i1);
-                    b->silver[ELEPHANT] ^= 1L << ((8*j2) + i2);
-                    b->empty ^= 1L << ((8*j2) + i2);
+                    ARIMAABOARD.silver[ELEPHANT] ^= 1L << ((8*j1) + i1);
+                    ARIMAABOARD.empty ^= 1L << ((8*j1) + i1);
+                    ARIMAABOARD.silver[ELEPHANT] ^= 1L << ((8*j2) + i2);
+                    ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
                     break;
                 case 'p':
                     return 0;

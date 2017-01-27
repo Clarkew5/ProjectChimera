@@ -21,8 +21,10 @@ struct Board{
     uint64_t empty;
 };
 
-struct Board *makeBoard(char *filepath);
-int printBoard(struct Board *b);
-int updateBoard(char *move, struct Board *b);
+
+
+int makeBoard(char *filepath);
+int printBoard();
+int updateBoard(char *move);
 
 #endif
