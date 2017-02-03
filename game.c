@@ -1,18 +1,20 @@
+#define BOARD
 #include "game.h"
 
 struct Board ARIMAABOARD = {
     .gold = {0L, 0L, 0L, 0L, 0L, 0L},
     .silver = {0L, 0L, 0L, 0L, 0L, 0L},
-    .empty = 0L};
+    .empty = 0L
+};
 
 int makeBoard(char *filepath){
     //struct Board *ARIMAABOARD = malloc(sizeof(struct Board));   
     if (filepath == NULL){    
         for (int i = 0; i < 6; i++){
-            ARIMAABOARD.gold[i] = 0;
-            ARIMAABOARD.silver[i] = 0;
+            ARIMAABOARD.gold[i] = 0L;
+            ARIMAABOARD.silver[i] = 0L;
         }
-        ARIMAABOARD.empty = ~0; 
+        ARIMAABOARD.empty = ~0L; 
     }
     else{
         //insert building a board form text file
@@ -23,7 +25,7 @@ int makeBoard(char *filepath){
 int printBoard(){
     printf(" +----------------+\n");
     for (int shift = 0; shift < 64; shift++){
-        uint64_t i = 1L <<shift;
+        uint64_t i = 1L << shift;
         if (shift%8 == 0)
             printf("%d| ", (8 - (shift/8)));
 
