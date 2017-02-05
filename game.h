@@ -24,11 +24,7 @@ struct Board{
     uint64_t empty;
 };
 
-#ifdef BOARD
-struct Board ARIMAABOARD;
-#else
 extern struct Board ARIMAABOARD;
-#endif
 
 int makeBoard(char *filepath);
 int printBoard();

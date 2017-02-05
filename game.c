@@ -1,10 +1,9 @@
-#define BOARD
 #include "game.h"
 
 struct Board ARIMAABOARD = {
     .gold = {0L, 0L, 0L, 0L, 0L, 0L},
     .silver = {0L, 0L, 0L, 0L, 0L, 0L},
-    .empty = 0L
+    .empty = ~0L
 };
 
 int makeBoard(char *filepath){
