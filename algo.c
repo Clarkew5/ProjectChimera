@@ -77,15 +77,15 @@ uint64_t move(int i, bool isGold){
     return tempMove;
 }
 
-/*
+
 uint64_t pushFull(int i, bool isGold){
     uint64_t weaker = 0;
     if (isGold)
-        for (i = j-1; j < 0; j--)
-            weaker |= ARIMAABOARD.gold[i];
+        for (int j = i-1; j < 0; j--)
+            weaker |= ARIMAABOARD.gold[j];
     else
-        for (i = j-1; j < 0; j--)
-            weaker |= ARIEMAABOARD.silver[i];
+        for (int j = i-1; j < 0; j--)
+            weaker |= ARIMAABOARD.silver[j];
     uint64_t tempPushFull = 
         near(near(weaker, i, isGold) & ARIMAABOARD.empty, i, isGold) & weaker;
     return tempPushFull;
@@ -105,11 +105,11 @@ uint64_t push(int i, bool isGold){
 uint64_t pullFull(int i, bool isGold){
     uint64_t weaker = 0;
     if (isGold)
-        for (i = j-1; j < 0; j--)
-            weaker |= ARIMAABOARD.gold[i];
+        for (int j = i-1; j < 0; j--)
+            weaker |= ARIMAABOARD.gold[j];
     else
-        for (i = j-1; j < 0; j--)
-            weaker |= ARIEMAABOARD.silver[i];
+        for (int j = i-1; j < 0; j--)
+            weaker |= ARIMAABOARD.silver[j];
 
     uint64_t notFrozen = 0L;    
     if (isGold)
@@ -117,7 +117,7 @@ uint64_t pullFull(int i, bool isGold){
     else
          notFrozen = ARIMAABOARD.silver[i] & ~frozen(i, isGold);
 
-    uint64_t tempPullFull = near(notfrozen, i, isGold) & weaker;
+    uint64_t tempPullFull = near(notFrozen, i, isGold) & weaker;
     return tempPullFull;
 }
 
@@ -131,7 +131,7 @@ uint64_t pull(int i, bool isGold){
         near(notFrozen & pullFull(i, isGold), i, isGold) & ARIMAABOARD.empty;
     return tempPull;
 }
-*/
+
 
 /*----------------------------------------------------------------------------*/
 
