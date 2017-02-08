@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <inttypes.h>
 
 #define RABBIT 0
@@ -17,10 +18,6 @@
 struct Board{
     uint64_t gold[6];
     uint64_t silver[6];
-    //uint64_t goldRabbits;
-    //uint64_t goldAnimals;
-    //uint64_t silverRabits;
-    //uint64_t silverAnimals;
     uint64_t empty;
 };
 

@@ -7,7 +7,6 @@ struct Board ARIMAABOARD = {
 };
 
 int makeBoard(char *filepath){
-    //struct Board *ARIMAABOARD = malloc(sizeof(struct Board));   
     if (filepath == NULL){    
         for (int i = 0; i < 6; i++){
             ARIMAABOARD.gold[i] = 0L;
@@ -64,6 +63,34 @@ int printBoard(){
     }
     printf(" +-----------------+\n   a b c d e f g h\n");
 	return 0;
+}
+
+int updateTraps(bool isGold, int animal, int square){
+    if (square == 18 || square == 21 || square == 42 || square == 45){
+        uint64_t friends = 0L;
+        if (isGold){
+            for (int i = 0; i < 6; i++){
+                friends |= ARIMAABOARD.gold[i];
+            }
+            if ((1L << (square + 8) & friends) == 0L &&
+                (1L << (square - 8) & friends) == 0L &&
+                (1L << (square + 1) & friends) == 0L &&
+                (1L << (square - 1) & friends) == 0L)
+                     ARIMAABOARD.gold[animal] ^= 1L << square;
+        }
+        else{
+            for (int i = 0; i < 6; i++){
+                friends |= ARIMAABOARD.silver[i];
+            }
+            if (1L << (square + 8) == 0L && 1L << (square - 8) == 0L &&
+                1L << (square + 1) == 0L && 1L << (square - 1) == 0L){
+                    ARIMAABOARD.silver[animal] ^= 1L << square;
+                    ARIMAABOARD.empty ^= 1L << square;
+            }
+        }
+        return 0;
+    }
+    else return 1;
 }
 
 int updateBoard(char *move){
@@ -164,73 +191,85 @@ int updateBoard(char *move){
                     ARIMAABOARD.gold[RABBIT] ^= 1L << ((8*j1) + i1);
                     ARIMAABOARD.empty ^= 1L << ((8*j1) + i1);
                     ARIMAABOARD.gold[RABBIT] ^= 1L << ((8*j2) + i2);
-                    ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);                    
+                    ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
+                    updateTraps(true, RABBIT, 8*j2 + i2);
                     break;
                 case 'r':
                     ARIMAABOARD.silver[RABBIT] ^= 1L << ((8*j1) + i1);
                     ARIMAABOARD.empty ^= 1L << ((8*j1) + i1);
                     ARIMAABOARD.silver[RABBIT] ^= 1L << ((8*j2) + i2);
                     ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
+                    updateTraps(false, RABBIT, 8*j2 + i2);
                     break;
                 case 'C':
                     ARIMAABOARD.gold[CAT] ^= 1L << ((8*j1) + i1);
                     ARIMAABOARD.empty ^= 1L << ((8*j1) + i1);
                     ARIMAABOARD.gold[CAT] ^= 1L << ((8*j2) + i2);
-                    ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);                    
+                    ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
+                    updateTraps(true, CAT, 8*j2 + i2);                    
                     break;
                 case 'c':
                     ARIMAABOARD.silver[CAT] ^= 1L << ((8*j1) + i1);
                     ARIMAABOARD.empty ^= 1L << ((8*j1) + i1);
                     ARIMAABOARD.silver[CAT] ^= 1L << ((8*j2) + i2);
                     ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
+                    updateTraps(false, CAT, 8*j2 + i2);
                     break;
                 case 'D':
                     ARIMAABOARD.gold[DOG] ^= 1L << ((8*j1) + i1);
                     ARIMAABOARD.empty ^= 1L << ((8*j1) + i1);
                     ARIMAABOARD.gold[DOG] ^= 1L << ((8*j2) + i2);
                     ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
+                    updateTraps(true, DOG, 8*j2 + i2);
                     break;
                 case 'd':
                     ARIMAABOARD.silver[DOG] ^= 1L << ((8*j1) + i1);
                     ARIMAABOARD.empty ^= 1L << ((8*j1) + i1);
                     ARIMAABOARD.silver[DOG] ^= 1L << ((8*j2) + i2);
                     ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
+                    updateTraps(false, DOG, 8*j2 + i2);
                     break;
                 case 'H':
                     ARIMAABOARD.gold[HORSE] ^= 1L << ((8*j1) + i1);
                     ARIMAABOARD.empty ^= 1L << ((8*j1) + i1);
                     ARIMAABOARD.gold[HORSE] ^= 1L << ((8*j2) + i2);
                     ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
+                    updateTraps(true, HORSE, 8*j2 + i2);
                     break;
                 case 'h':
                     ARIMAABOARD.silver[HORSE] ^= 1L << ((8*j1) + i1);
                     ARIMAABOARD.empty ^= 1L << ((8*j1) + i1);
                     ARIMAABOARD.silver[HORSE] ^= 1L << ((8*j2) + i2);
                     ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
+                    updateTraps(false, HORSE, 8*j2 + i2);
                     break;
                 case 'M':
                     ARIMAABOARD.gold[CAMMEL] ^= 1L << ((8*j1) + i1);
                     ARIMAABOARD.empty ^= 1L << ((8*j1) + i1);
                     ARIMAABOARD.gold[CAMMEL] ^= 1L << ((8*j2) + i2);
                     ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
+                    updateTraps(true, CAMMEL, 8*j2 + i2);
                     break;
                 case 'm':
                     ARIMAABOARD.silver[CAMMEL] ^= 1L << ((8*j1) + i1);
                     ARIMAABOARD.empty ^= 1L << ((8*j1) + i1);
                     ARIMAABOARD.silver[CAMMEL] ^= 1L << ((8*j2) + i2);
                     ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
+                    updateTraps(false, CAMMEL, 8*j2 + i2);
                     break;
                 case 'E':
                     ARIMAABOARD.gold[ELEPHANT] ^= 1L << ((8*j1) + i1);
                     ARIMAABOARD.empty ^= 1L << ((8*j1) + i1);
                     ARIMAABOARD.gold[ELEPHANT] ^= 1L << ((8*j2) + i2);
                     ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
+                    updateTraps(true, ELEPHANT, 8*j2 + i2);
                     break;
                 case 'e':
                     ARIMAABOARD.silver[ELEPHANT] ^= 1L << ((8*j1) + i1);
                     ARIMAABOARD.empty ^= 1L << ((8*j1) + i1);
                     ARIMAABOARD.silver[ELEPHANT] ^= 1L << ((8*j2) + i2);
                     ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
+                    updateTraps(false, ELEPHANT, 8*j2 + i2);
                     break;
                 case 'p':
                     return 0;
