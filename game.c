@@ -73,7 +73,7 @@ int updateBoard(char *move){
         printf("%s\n", move);
         do{
             int i = strchr(colLetters, *(move+1)) - colLetters;
-            int j = strchr(rowNumbers, *(move+2)) - rowNumbers;        
+            int j = strchr(rowNumbers, *(move+2)) - rowNumbers;
             switch (*move){
                 case 'R':
                     ARIMAABOARD.gold[RABBIT] ^= 1L << ((8*j) + i);

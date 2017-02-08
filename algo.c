@@ -150,10 +150,22 @@ int printBitboard(uint64_t bitboard){
 }
 
 uint64_t *generateMoveBitboards(bool isGold){
-    uint64_t *bitboards = malloc(6 * sizeof(uint64_t)); 
+    uint64_t *bitboards = malloc(16 * sizeof(uint64_t)); 
     for (int p = 0; p < 6; p++){
         printf("%d\n", p);
         *(bitboards + p) = move(p, isGold);
+        printBitboard(*(bitboards+p));
+        printf("\n-------------------------\n");
+    }
+    for (int p = 6; p < 11; p++){
+        printf("%d\n", p);
+        *(bitboards + p) = push(p, isGold);
+        printBitboard(*(bitboards+p));
+        printf("\n-------------------------\n");
+    }
+    for (int p = 11; p < 16; p++){
+        printf("%d\n", p);
+        *(bitboards + p) = pull(p, isGold);
         printBitboard(*(bitboards+p));
         printf("\n-------------------------\n");
     }
@@ -176,7 +188,6 @@ int numberOfMoves(uint64_t *bitboards, bool isGold){
             else
                 peice = i & ARIMAABOARD.silver[p];
 
-
             if (peice == i){
                 if((peice >> 8 != 0L) &&
                     !(p == 0 && !isGold) &&
@@ -195,12 +206,118 @@ int numberOfMoves(uint64_t *bitboards, bool isGold){
             }
         }
     }
-    numOfMoves = numOfMovesNorth + numOfMovesEast + numOfMovesSouth + numOfMovesWest;
+    numOfMoves = 
+        numOfMovesNorth + numOfMovesEast + numOfMovesSouth + numOfMovesWest;
     printf("North: %d\n", numOfMovesNorth);
     printf("East: %d\n", numOfMovesEast);
     printf("South: %d\n", numOfMovesSouth);
     printf("West: %d\n", numOfMovesWest);
     return numOfMoves;
+}
+
+int numberOfMovesForSquare(bool isGold, int i, int shift){
+    int numOfMoves = 0;
+    uint64_t square = 1L << shift;
+    if (isGold){
+        for(int p = 0; p < 6; p++){
+            if ((ARIMAABOARD.gold[i] & square) == square){
+                uint64_t moveSquare = move(p, isGold);
+                if((square >> 8 != 0L) &&
+                    ((square >> 8) & moveSquare) == (square >> 8))
+                    numOfMoves++;
+                if((square >> 1 != 0L) &&
+                    ((square >> 1) & moveSquare & ~rEdge) == (square >> 1))
+                    numOfMoves++;
+                if((square << 1 != 0L) &&
+                    ((square << 1) & moveSquare & ~lEdge) == (square << 1))
+                    numOfMoves++;
+                if((square << 8 != 0L) &&
+                    ((square << 8) & moveSquare) == (square << 8))
+                    numOfMoves++;
+            }
+        }
+    }  
+    else{
+        for(int p = 0; p < 6; p++){
+            if ((ARIMAABOARD.silver[i] & square) == square){
+                uint64_t moveSquare = move(p, isGold);
+                if((square >> 8 != 0L) &&
+                    ((square >> 8) & moveSquare) == (square >> 8))
+                    numOfMoves++;
+                if((square >> 1 != 0L) &&
+                    ((square >> 1) & moveSquare & ~rEdge) == (square >> 1))
+                    numOfMoves++;
+                if((square << 1 != 0L) &&
+                    ((square << 1) & moveSquare & ~lEdge) == (square << 1))
+                    numOfMoves++;
+                if((square << 8 != 0L) &&
+                    ((square << 8) & moveSquare) == (square << 8))
+                    numOfMoves++;
+            }
+        }
+    }
+    return numOfMoves;
+}
+
+
+int numberOfPushes(uint64_t *bitboards, bool isGold){
+    int numOfPushes = 0;
+    for (int p = 6; p < 11; p++){
+        for (int shift = 0; shift < 64; shift++){
+            uint64_t i = 1L << shift;
+            uint64_t peice = 0L;
+            if (isGold)
+                peice = i & ARIMAABOARD.gold[p];
+            else
+                peice = i & ARIMAABOARD.silver[p];
+
+            if (peice == i){
+                if((peice >> 8 != 0L) &&
+                    ((peice >> 8) & *(bitboards+p)) == (peice >> 8))
+                    numOfPushes += numberOfMovesForSquare(isGold, (p-5), shift);
+                if((peice >> 1 != 0L) &&
+                    ((peice >> 1) & *(bitboards+p) & ~rEdge) == (peice >> 1))
+                    numOfPushes += numberOfMovesForSquare(isGold, (p-5), shift);
+                if((peice << 1 != 0L) &&
+                    ((peice << 1) & *(bitboards+p) & ~lEdge) == (peice << 1))
+                    numOfPushes += numberOfMovesForSquare(isGold, (p-5), shift);
+                if((peice << 8 != 0L) &&
+                    ((peice << 8) & *(bitboards+p)) == (peice << 8))
+                    numOfPushes += numberOfMovesForSquare(isGold, (p-5), shift);  
+            }
+        }
+    }
+    return numOfPushes;
+}
+
+int numberOfPulls(uint64_t *bitboards, bool isGold){
+    int numOfPulls = 0;
+    for (int p = 11; p < 15; p++){
+        for (int shift = 0; shift < 64; shift++){
+            uint64_t i = 1L << shift;
+            uint64_t peice = 0L;
+            if (isGold)
+                peice = i & ARIMAABOARD.gold[p];
+            else
+                peice = i & ARIMAABOARD.silver[p];
+
+            if (peice == i){
+                if((peice >> 8 != 0L) &&
+                    ((peice >> 8) & *(bitboards+p)) == (peice >> 8))
+                    numOfPulls++;
+                if((peice >> 1 != 0L) &&
+                    ((peice >> 1) & *(bitboards+p) & ~rEdge) == (peice >> 1))
+                    numOfPulls++;
+                if((peice << 1 != 0L) &&
+                    ((peice << 1) & *(bitboards+p) & ~lEdge) == (peice << 1))
+                    numOfPulls++;
+                if((peice << 8 != 0L) &&
+                    ((peice << 8) & *(bitboards+p)) == (peice << 8))
+                    numOfPulls++;  
+            }
+        }
+    }
+    return numOfPulls;
 }
 
 uint16_t randomMove();
