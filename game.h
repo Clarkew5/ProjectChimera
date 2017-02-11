@@ -26,5 +26,6 @@ extern struct Board ARIMAABOARD;
 int makeBoard(char *filepath);
 int printBoard();
 int updateBoard(char *move);
+int updateTraps(bool isGold, int animal, int square);
 
 #endif

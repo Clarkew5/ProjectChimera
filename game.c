@@ -75,15 +75,19 @@ int updateTraps(bool isGold, int animal, int square){
             if ((1L << (square + 8) & friends) == 0L &&
                 (1L << (square - 8) & friends) == 0L &&
                 (1L << (square + 1) & friends) == 0L &&
-                (1L << (square - 1) & friends) == 0L)
-                     ARIMAABOARD.gold[animal] ^= 1L << square;
+                (1L << (square - 1) & friends) == 0L){
+                    ARIMAABOARD.gold[animal] ^= 1L << square;
+                    ARIMAABOARD.empty ^= 1L << square;
+                }
         }
         else{
             for (int i = 0; i < 6; i++){
                 friends |= ARIMAABOARD.silver[i];
             }
-            if (1L << (square + 8) == 0L && 1L << (square - 8) == 0L &&
-                1L << (square + 1) == 0L && 1L << (square - 1) == 0L){
+            if ((1L << (square + 8) & friends) == 0L &&
+                (1L << (square - 8) & friends) == 0L &&
+                (1L << (square + 1) & friends) == 0L &&
+                (1L << (square - 1) & friends) == 0L){
                     ARIMAABOARD.silver[animal] ^= 1L << square;
                     ARIMAABOARD.empty ^= 1L << square;
             }
@@ -286,3 +290,5 @@ int updateBoard(char *move){
     }
     return 0;
 }
+
+
