@@ -55,8 +55,12 @@
 /*----------------------------------------------------------------------------*/
 
 int randomAgent(bool isGold);
+int numberOfMovesForSquare(bool isGold, int shift);
 int numberOfMoves(uint64_t *bitboards, bool isGold);
+int numberOfPushes(uint64_t *bitboards, bool isGold);
+int numberOfPulls(uint64_t *bitboards, bool isGold);
 uint64_t *generateMoveBitboards(bool isGold);
 int printBitboard(uint64_t bitboard);
+bool gameOver(bool isGold);
 
 #endif

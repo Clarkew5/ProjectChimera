@@ -76,8 +76,8 @@ int updateTraps(bool isGold, int animal, int square){
                 (1L << (square - 8) & friends) == 0L &&
                 (1L << (square + 1) & friends) == 0L &&
                 (1L << (square - 1) & friends) == 0L){
-                    ARIMAABOARD.gold[animal] ^= 1L << square;
-                    ARIMAABOARD.empty ^= 1L << square;
+                    ARIMAABOARD.gold[animal] &= ~(1L << square);
+                    ARIMAABOARD.empty |= 1L << square;
                 }
         }
         else{
@@ -88,7 +88,7 @@ int updateTraps(bool isGold, int animal, int square){
                 (1L << (square - 8) & friends) == 0L &&
                 (1L << (square + 1) & friends) == 0L &&
                 (1L << (square - 1) & friends) == 0L){
-                    ARIMAABOARD.silver[animal] ^= 1L << square;
+                    ARIMAABOARD.silver[animal] &= ~(1L << square);
                     ARIMAABOARD.empty ^= 1L << square;
             }
         }
