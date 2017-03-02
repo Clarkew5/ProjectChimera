@@ -9,9 +9,11 @@ game.o: game.c game.h
 
 algo.o: algo.c algo.h
 
+hash.o: hash.c hash.h
+
 test: test.c game.o algo.o
 
-arimaa: arimaa.c game.o algo.o
+arimaa: arimaa.c game.o algo.o hash.o
 
 clean:
 	rm *.o arimaa

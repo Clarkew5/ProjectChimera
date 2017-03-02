@@ -8,6 +8,7 @@
 #include <inttypes.h>
 #include <stdbool.h>
 #include <time.h>
+#include <limits.h>
 #include "game.h"
 
 /*--move masks----------------------------------------------------------------*/
@@ -62,5 +63,5 @@ int numberOfPulls(uint64_t *bitboards, bool isGold);
 uint64_t *generateMoveBitboards(bool isGold);
 int printBitboard(uint64_t bitboard);
 bool gameOver(bool isGold);
-
+int negaMaxSearch(bool isGold, double tTime);
 #endif

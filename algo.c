@@ -511,62 +511,50 @@ int updateBoardBit(uint16_t move){
         case(SILVERR):
             isGold = false;
             p = 0;
-            printf("r");
             break; 
         case(SILVERC):
             isGold = false;
             p = 1;
-            printf("c");
             break;
         case(SILVERD):
             isGold = false;
             p = 2;
-            printf("d");
             break;
         case(SILVERH):
             isGold = false;
             p = 3;
-            printf("h");
             break;
         case(SILVERM):
             isGold = false;
             p = 4;
-            printf("m");
             break;
         case(SILVERE):
             isGold = false;
-            printf("e");
             p = 5;
             break;
         case(GOLDR):
             isGold = true;
             p = 0;
-            printf("R");
             break;
         case(GOLDC):
             isGold = true;
             p = 1;
-            printf("C");
             break;
         case(GOLDD):
             isGold = true;
             p = 2;
-            printf("D");
             break;
         case(GOLDH):
             isGold = true;
             p = 3;
-            printf("H");
             break;
         case(GOLDM):
             isGold = true;
             p = 4;
-            printf("M");
             break;
         case(GOLDE):
             isGold = true;
             p = 5;
-            printf("E");
             break;
         default:
             printf("move corrupt\n");
@@ -575,35 +563,27 @@ int updateBoardBit(uint16_t move){
     switch (move & collumMask){
         case(COLLUMa):
             i1 = 0;
-            printf("a");
             break;
         case(COLLUMb):
             i1 = 1;
-            printf("b");
             break;
         case(COLLUMc):
             i1 = 2;
-            printf("c");
             break;
         case(COLLUMd):
             i1 = 3;
-            printf("d");
             break;
         case(COLLUMe):
             i1 = 4;
-            printf("e");
             break;
         case(COLLUMf):
             i1 = 5;
-            printf("f");
             break;
         case(COLLUMg):
             i1 = 6;
-            printf("g");
             break;
         case(COLLUMh):
             i1 = 7;
-            printf("h");
             break;
         default:
             printf("move corrupt\n");
@@ -612,35 +592,27 @@ int updateBoardBit(uint16_t move){
     switch (move & rowMask){
         case(ROW1):
             j1 = 0;
-            printf("8");
             break;
         case(ROW2):
             j1 = 1;
-            printf("7");
             break;
         case(ROW3):
             j1 = 2;
-            printf("6");
             break;
         case(ROW4):
             j1 = 3;
-            printf("5");
             break;
         case(ROW5):
             j1 = 4;
-            printf("4");
             break;
         case(ROW6):
             j1 = 5;
-            printf("3");
             break;
         case(ROW7):
             j1 = 6;
-            printf("2");
             break;
         case(ROW8):
             j1 = 7;
-            printf("1");
             break;
         default:
             printf("move corrupt\n");
@@ -650,22 +622,18 @@ int updateBoardBit(uint16_t move){
         case(DIRECTIONN):
             i2 = i1;
             j2 = j1 - 1;
-            printf("N ");
             break;
         case(DIRECTIONE):
             i2 = i1 + 1;
             j2 = j1;
-            printf("E ");
             break;
         case(DIRECTIONS):
             i2 = i1;
             j2 = j1 + 1;
-            printf("S ");
             break;
         case(DIRECTIONW):
             i2 = i1 - 1;
             j2 = j1;
-            printf("W ");
             break;
         default:
             printf("move corrupt\n");
@@ -676,14 +644,14 @@ int updateBoardBit(uint16_t move){
         ARIMAABOARD.empty ^= 1L << ((8*j1) + i1);
         ARIMAABOARD.gold[p] ^= 1L << ((8*j2) + i2);
         ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
-        updateTraps(true, p, 8*j2 + i2);
+        //updateTraps(true, p, 8*j2 + i2);
     }
     else{
         ARIMAABOARD.silver[p] ^= 1L << ((8*j1) + i1);
         ARIMAABOARD.empty ^= 1L << ((8*j1) + i1);
         ARIMAABOARD.silver[p] ^= 1L << ((8*j2) + i2);
         ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
-        updateTraps(false, p, 8*j2 + i2);
+        //updateTraps(false, p, 8*j2 + i2);
     }
     return 0;
 }
@@ -914,7 +882,7 @@ uint16_t *movesToASquare(bool isGold, uint64_t *bitboards, int shift, int numOfM
     return moves;
 }
 
-int randomMovePushPull(uint64_t *bitboards, bool isGold, int movesLeft){
+uint16_t *generateMovesFromBoard(uint64_t *bitboards, bool isGold, int movesLeft){
     int numOfMoves = numberOfMoves(bitboards, isGold);
     int numOfPushes = 0;
     int numOfPulls = 0;
@@ -923,11 +891,9 @@ int randomMovePushPull(uint64_t *bitboards, bool isGold, int movesLeft){
         numOfPulls = 2*numberOfPulls(bitboards, isGold);
     }
     int size = numOfMoves + numOfPushes + numOfPulls;
-    if (size == 0){
-        printf("You Win\n");
-        return 4;
-    } 
+
     uint16_t *moves = calloc(size, sizeof(uint16_t));
+
     for(int i = 0; i < numOfMoves;){//move
         *(moves + i) = 0L;
         for (int p = 0; p < 6; p++){
@@ -1088,18 +1054,40 @@ int randomMovePushPull(uint64_t *bitboards, bool isGold, int movesLeft){
             }
         }
     }
+    return moves;
+}
+
+int randomMovePushPull(uint64_t *bitboards, bool isGold, int movesLeft){
+    //getchar();
+    uint16_t *moves = generateMovesFromBoard(bitboards, isGold, movesLeft);
+    int numOfMoves = numberOfMoves(bitboards, isGold);
+    int numOfPushes = 0;
+    int numOfPulls = 0;
+    if (movesLeft >= 2){
+        numOfPushes = 2*numberOfPushes(bitboards, isGold);
+        numOfPulls = 2*numberOfPulls(bitboards, isGold);
+    }
+    int size = numOfMoves + numOfPushes + numOfPulls;
+    if (size == 0){
+        if (isGold)
+            printf("Silver wins, Gold has no more moves\n");
+        else
+            printf("Gold wins, Silver has no more moves\n");
+        return 4;
+    } 
     time_t t;
     srand((unsigned) time(&t));
     for (int i = 0; i < size; i++){
         printMove(*(moves+i));
     }
-    
+
     int randomIndex = (rand() % size);
     printf("\n%d/%d ", randomIndex, size);
     printf("moves: %d, pushes: %d, pulls: %d\n", numOfMoves, numOfPushes/2, numOfPulls/2);
     if (randomIndex >= 0 && randomIndex < numOfMoves){
         printf("move\n");
         updateBoardBit(*(moves + randomIndex));
+        printMove(*(moves + randomIndex));
         printf("\n=========================================================\n");
         free(moves);
         return 0; 
@@ -1109,8 +1097,10 @@ int randomMovePushPull(uint64_t *bitboards, bool isGold, int movesLeft){
             randomIndex--;
         printf("push\n");
         updateBoardBit(*(moves + randomIndex));
+        printMove(*(moves + randomIndex));
         printf("\n");
         updateBoardBit(*(moves + randomIndex + 1));
+        printMove(*(moves + randomIndex + 1));
         printf("\n=========================================================\n");
         free(moves);
         return 1;
@@ -1120,8 +1110,10 @@ int randomMovePushPull(uint64_t *bitboards, bool isGold, int movesLeft){
             randomIndex--;
         printf("pull\n");
         updateBoardBit(*(moves + randomIndex));
+        printMove(*(moves + randomIndex));
         printf("\n");
         updateBoardBit(*(moves + randomIndex + 1));
+        printMove(*(moves + randomIndex + 1));
         printf("\n=========================================================\n");
         free(moves);
         return 2;
@@ -1194,16 +1186,16 @@ int randomAgent(bool isGold){
                 free(bitboards);
                 return 0;
         }
-        for (int p = 0; p < 6; p++){
-            updateTraps(true, p, 18);
-            updateTraps(true, p, 21);
-            updateTraps(true, p, 42);
-            updateTraps(true, p, 45);
-            updateTraps(false, p, 18);
-            updateTraps(false, p, 21);
-            updateTraps(false, p, 42);
-            updateTraps(false, p, 45);
-        }
+        //for (int p = 0; p < 6; p++){
+            //updateTraps(true, p, 18);
+            //updateTraps(true, p, 21);
+            //updateTraps(true, p, 42);
+            //updateTraps(true, p, 45);
+            //updateTraps(false, p, 18);
+            //updateTraps(false, p, 21);
+            //updateTraps(false, p, 42);
+            //updateTraps(false, p, 45);
+        //}
         printBoard();
         free(bitboards);
         if(gameOver(isGold))
@@ -1212,4 +1204,426 @@ int randomAgent(bool isGold){
     printf("\n");
     return 0;
 }
+///*
+int heuristic(){
+    //time_t t;
+    //srand((unsigned) time(&t));
+    return (rand() % 10000) + 1;
+}
 
+int undoMove(uint16_t lastMove){
+    uint16_t move = lastMove;
+    move &= ~(directionMask); 
+    switch (lastMove & directionMask){
+        case(DIRECTIONN):
+            move |= DIRECTIONS;
+            move &= ~(rowMask);
+            switch (lastMove & rowMask){
+                case(ROW8):
+                    move |= ROW7;
+                    break;
+                case(ROW7):
+                    move |= ROW6;
+                    break;
+                case(ROW6):
+                    move |= ROW5;
+                    break;
+                case(ROW5):
+                    move |= ROW4;
+                    break;
+                case(ROW4):
+                    move |= ROW3;
+                    break;
+                case(ROW3):
+                    move |= ROW2;
+                    break;
+                case(ROW2):
+                    move |= ROW1;
+                    break;
+            }
+            break;
+        case(DIRECTIONE):
+            move |= DIRECTIONW;
+            move &= ~(collumMask);
+            switch (lastMove & collumMask){
+                case(COLLUMa):
+                    move |= COLLUMb;
+                    break;
+                case(COLLUMb):
+                    move |= COLLUMc;
+                    break;
+                case(COLLUMc):
+                    move |= COLLUMd;
+                    break;
+                case(COLLUMd):
+                    move |= COLLUMe;
+                    break;
+                case(COLLUMe):
+                    move |= COLLUMf;
+                    break;
+                case(COLLUMf):
+                    move |= COLLUMg;
+                    break;
+                case(COLLUMg):
+                    move |= COLLUMh;
+                    break;
+            }
+            break;
+        case(DIRECTIONS):
+            move |= DIRECTIONN;
+            move &= ~(rowMask);
+            switch (lastMove & rowMask){
+                case(ROW1):
+                    move |= ROW2;
+                    break;
+                case(ROW2):
+                    move |= ROW3;
+                    break;
+                case(ROW3):
+                    move |= ROW4;
+                    break;
+                case(ROW4):
+                    move |= ROW5;
+                    break;
+                case(ROW5):
+                    move |= ROW6;
+                    break;
+                case(ROW6):
+                    move |= ROW7;
+                    break;
+                case(ROW7):
+                    move |= ROW8;
+                    break;
+            }
+            break;
+        case(DIRECTIONW):
+            move |= DIRECTIONE;
+            move &= ~(collumMask);
+            switch (lastMove & collumMask){
+                case(COLLUMh):
+                    move |= COLLUMg;
+                    break;
+                case(COLLUMg):
+                    move |= COLLUMf;
+                    break;
+                case(COLLUMf):
+                    move |= COLLUMe;
+                    break;
+                case(COLLUMe):
+                    move |= COLLUMd;
+                    break;
+                case(COLLUMd):
+                    move |= COLLUMc;
+                    break;
+                case(COLLUMc):
+                    move |= COLLUMb;
+                    break;
+                case(COLLUMb):
+                    move |= COLLUMa;
+                    break;
+            }
+            break;
+        default:
+            printf("move corrupt\n");
+            return 1;
+    }
+    printMove(lastMove);
+    printf("-> ");
+    printMove(move);
+    printf("\n");
+    updateBoardBit(move);
+    return 0;
+}
+
+
+
+int negaMax(uint16_t lastMove, int movesLeft, uint16_t *maxMoves, int depth, bool isGold, int A, int B, double tTime, time_t startTime){
+    printMove(lastMove);
+    printf("moves left: %d depth: %d\n", movesLeft, depth);
+    printBoard();
+    //getchar();
+    if (depth == 0){
+        printf("backtrack depth == 0\n");
+        printBoard();
+        int h = heuristic();
+        //printf("h: %d\n", h);
+        return h;
+    }
+    else if (gameOver(isGold)){
+        undoMove(lastMove);
+        printf("backtrack game over\n");
+        //printBoard();
+        //movesLeft++;
+        return INT_MAX;
+    }
+
+    int max = INT_MIN;
+    uint64_t *bitboards = generateMoveBitboards(isGold);
+//------------------------------------------------------------------------------
+    int numOfMoves = numberOfMoves(bitboards, isGold);
+    int numOfPushes = 0;
+    int numOfPulls = 0;
+    if (movesLeft >= 2){
+        numOfPushes = 2*numberOfPushes(bitboards, isGold);
+        numOfPulls = 2*numberOfPulls(bitboards, isGold);
+    }
+    int size = numOfMoves + numOfPushes + numOfPulls;
+    if (size == 0){
+        undoMove(lastMove);
+        printf("backtrack no moves\n");
+        //printBoard();
+        //movesLeft++;
+        return INT_MIN;
+    }
+    int score;
+    for(int i = 0; i < numOfMoves;){//move
+        for (int p = 0; p < 6; p++){
+            for (int shift = 0; shift < 64; shift++){
+                uint64_t square = 1L << shift;
+                uint64_t peice = 0L;
+                if (isGold)
+                    peice = square & ARIMAABOARD.gold[p];
+                else
+                    peice = square & ARIMAABOARD.silver[p];
+
+                if (peice == square){
+                    if((peice >> 8 != 0L) &&
+                        !(p == 0 && !isGold) &&
+                        ((peice >> 8) & *(bitboards+p)) == (peice >> 8)){
+                            uint16_t lastMove = conMove(isGold,p,shift%8,shift/8,'n');
+                            updateBoardBit(lastMove);
+                            movesLeft--;
+                            if (movesLeft > 0){
+                                score = negaMax(lastMove, movesLeft, maxMoves, depth, isGold, A, B, tTime, startTime);
+                                movesLeft++;
+                                if (score > max){
+                                    printMove(lastMove);
+                                    printf("move index: %d\n", 4-movesLeft);
+                                    *(maxMoves + (4-movesLeft)) = lastMove;
+                                    max = score;
+                                }
+                            }
+                            else
+                                score = -negaMax(lastMove, 4, maxMoves, depth-1, !isGold, -B, -A, tTime, startTime);
+                            undoMove(lastMove);
+                            printf("backtrack\n");
+                            printBoard();
+                            i++;
+                    }
+                    if((peice >> 1 != 0L) &&
+                        ((peice >> 1) & *(bitboards+p) & ~lEdge) == (peice >> 1)){
+                            uint16_t lastMove = conMove(isGold,p,shift%8,shift/8,'w');
+                            updateBoardBit(lastMove);
+                            movesLeft--;
+                            if (movesLeft > 0){
+                                score = negaMax(lastMove, movesLeft, maxMoves, depth, isGold, A, B, tTime, startTime);
+                                movesLeft++;
+                                if (score > max){
+                                    printMove(lastMove);
+                                    printf("move index: %d\n", 4-movesLeft);
+                                    *(maxMoves + (4-movesLeft)) = lastMove;
+                                    max = score;
+                                }
+                            }
+                            else
+                                score = -negaMax(lastMove, 4, maxMoves, depth-1, !isGold, -B, -A, tTime, startTime);
+                            undoMove(lastMove);
+                            printf("backtrack\n");
+                            printBoard();
+                            i++;
+                    }
+                    if((peice << 1 != 0L) &&
+                        ((peice << 1) & *(bitboards+p) & ~rEdge) == (peice << 1)){
+                            uint16_t lastMove = conMove(isGold,p,shift%8,shift/8,'e');
+                            updateBoardBit(lastMove);
+                            movesLeft--;
+                            if (movesLeft > 0){
+                                score = negaMax(lastMove, movesLeft, maxMoves, depth, isGold, A, B, tTime, startTime);
+                                movesLeft++;
+                                if (score > max){
+                                    printMove(lastMove);
+                                    printf("move index: %d\n", 4-movesLeft);
+                                    *(maxMoves + (4-movesLeft)) = lastMove;
+                                    max = score;
+                                }
+                            }
+                            else
+                                score = -negaMax(lastMove, 4, maxMoves, depth-1, !isGold, -B, -A, tTime, startTime);
+                            undoMove(lastMove);
+                            printf("backtrack\n");
+                            printBoard();
+                            i++;
+                    }
+                    if((peice << 8 != 0L) &&
+                        !(p == 0 && isGold) &&
+                        ((peice << 8) & *(bitboards+p)) == (peice << 8)){
+                            uint16_t lastMove = conMove(isGold,p,shift%8,shift/8,'s');
+                            updateBoardBit(lastMove);
+                            movesLeft--;
+                            if (movesLeft > 0){
+                                score = negaMax(lastMove, movesLeft, maxMoves, depth, isGold, A, B, tTime, startTime);
+                                movesLeft++;
+                                if (score > max){
+                                    printMove(lastMove);
+                                    printf("move index: %d\n", 4-movesLeft);
+                                    *(maxMoves + (4-movesLeft)) = lastMove;
+                                    max = score;
+                                }
+                            }
+                            else
+                                score = -negaMax(lastMove, 4, maxMoves, depth-1, !isGold, -B, -A, tTime, startTime);
+                            undoMove(lastMove);
+                            printf("backtrack\n");
+                            printBoard();
+                            i++;  
+                    }
+                }
+            }
+        }        
+        //printf("---------------%d/%d----------------\n", movesLeft, numOfMoves);
+    }
+    //movesLeft += numOfMoves;
+    free(bitboards);
+//------------------------------------------------------------------------------
+    /*if(difftime(time(NULL), startTime) >= tTime){
+        printf("backtrack time out\n");
+        //printBoard();
+        return INT_MIN;
+    }*/
+    if (score > max){
+        max = score;
+    }
+    if (score > A)
+        A = score;
+    if (A >= B){
+        undoMove(lastMove);
+        printf("backtrack prune\n");
+        printBoard();
+        return A;
+    }
+    //undoMove(lastMove);
+    //printf("backtrack max\n");
+    //printBoard();
+    return max;
+}
+
+int negaMaxSearch(bool isGold, double tTime){
+    uint16_t *maxMoves = malloc(4 * sizeof(uint16_t));
+    time_t startTime = time(NULL);
+    int A = INT_MIN;
+    int B = INT_MAX;
+    int max = INT_MIN;
+    for (int depth = 1; ; /*depth++*/){
+        int score = 0;
+        uint64_t *bitboards = generateMoveBitboards(isGold);
+    //--------------------------------------------------------------------------
+        int numOfMoves = numberOfMoves(bitboards, isGold);
+        int numOfPushes = 0;
+        int numOfPulls = 0;
+        numOfPushes = 2*numberOfPushes(bitboards, isGold);
+        numOfPulls = 2*numberOfPulls(bitboards, isGold);
+        int size = numOfMoves + numOfPushes + numOfPulls;
+        if (size == 0){
+            if (isGold)
+                printf("Silver wins, Gold has no more moves\n");
+            else
+                printf("Gold wins, Silver has no more moves\n");
+            return 4;
+        } 
+        
+        for(int i = 0; i < numOfMoves;){//move
+            for (int p = 0; p < 6; p++){
+                for (int shift = 0; shift < 64; shift++){
+                    uint64_t square = 1L << shift;
+                    uint64_t peice = 0L;
+                    if (isGold)
+                        peice = square & ARIMAABOARD.gold[p];
+                    else
+                        peice = square & ARIMAABOARD.silver[p];
+
+                    if (peice == square){
+                        if((peice >> 8 != 0L) &&
+                            !(p == 0 && !isGold) &&
+                            ((peice >> 8) & *(bitboards+p)) == (peice >> 8)){
+                                uint16_t lastMove = conMove(isGold,p,shift%8,shift/8,'n');
+                                updateBoardBit(lastMove);
+                                printf("++++++++++top level Move+++++++++++\n");
+                                score = negaMax(lastMove, 3, maxMoves, depth, isGold, A, B, tTime, startTime);
+                                if (score > max){
+                                    max = score;
+                                    *(maxMoves) = lastMove;
+                                }
+                                undoMove(lastMove);
+                                printf("backtrack top level\n");
+                                printBoard();
+                                i++;
+                        }
+                        if((peice >> 1 != 0L) &&
+                            ((peice >> 1) & *(bitboards+p) & ~lEdge) == (peice >> 1)){
+                                uint16_t lastMove = conMove(isGold,p,shift%8,shift/8,'w');
+                                printf("++++++++++top level Move+++++++++++\n");
+                                updateBoardBit(lastMove);
+                                score = negaMax(lastMove, 3, maxMoves, depth, isGold, A, B, tTime, startTime);
+                                if (score > max){
+                                    max = score;
+                                    *(maxMoves) = lastMove;
+                                }
+                                undoMove(lastMove);
+                                printf("backtrack top level\n");
+                                printBoard();
+                                i++;
+                        }
+                        if((peice << 1 != 0L) &&
+                            ((peice << 1) & *(bitboards+p) & ~rEdge) == (peice << 1)){
+                                uint16_t lastMove = conMove(isGold,p,shift%8,shift/8,'e');
+                                printf("++++++++++top level Move+++++++++++\n");
+                                updateBoardBit(lastMove);
+                                score = negaMax(lastMove, 3, maxMoves, depth, isGold, A, B, tTime, startTime);
+                                if (score > max){
+                                    max = score;
+                                    *(maxMoves) = lastMove;
+                                }
+                                undoMove(lastMove);
+                                printf("backtrack top level\n");
+                                printBoard();
+                                i++;
+                        }
+                        if((peice << 8 != 0L) &&
+                            !(p == 0 && isGold) &&
+                            ((peice << 8) & *(bitboards+p)) == (peice << 8)){
+                                uint16_t lastMove = conMove(isGold,p,shift%8,shift/8,'s');
+                                printf("++++++++++top level Move+++++++++++\n");
+                                updateBoardBit(lastMove);
+                                score = negaMax(lastMove, 3, maxMoves, depth, isGold, A, B, tTime, startTime);
+                                if (score > max){
+                                    max = score;
+                                    *(maxMoves) = lastMove;
+                                }
+                                undoMove(lastMove);
+                                printf("backtrack top level\n");
+                                printBoard();
+                                i++;  
+                        }
+                    }
+                }
+            }
+        }
+        printf("explored all moves\n");
+        break;
+        free(bitboards);
+        /*if(difftime(time(NULL), startTime) >= tTime)             
+            break;*/
+
+    }
+    for (int i = 0; i < 4; i++){
+        printf("\n");printBoard(); 
+        updateBoardBit(*(maxMoves + i));
+        printMove(*(maxMoves+i));
+    }
+    printf("\n");
+    //printBoard();
+    //printf("\n");
+    return 0;
+}
+
+//*/
