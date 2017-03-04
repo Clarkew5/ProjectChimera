@@ -8,13 +8,15 @@
 
 int main(int argc, char *argv[]){
     uint64_t boardCheck;
+    makeBoard(NULL);
     updateBoard("Ra1 Ra2 Rb1 Rc1 Rf1 Rg1 Rh1 Rh2 Cc2 Cf2 De1 Dd1 Hb2 Hg2 Me2 Ed2");
     updateBoard("ra8 rb8 rc8 rd8 re8 rf8 rg8 rh8 cc7 cf7 da7 dh7 hb7 hg7 md7 ee7");
+    
     while (true){
         negaMaxSearch(GOLD, 3600);        
-        printBoard();
+        //printBoard();
         //getchar();
-        printf("***********************************************************\n");
+        //printf("***********************************************************\n");
         if (gameOver(GOLD))
             break;
         boardCheck = 0L;
@@ -27,10 +29,10 @@ int main(int argc, char *argv[]){
             printf("board corrupted by gold\n");
             return 1;
         }
-        getchar();
+        //getchar();
         randomAgent(SILVER);        
         //printBoard();
-        printf("***********************************************************\n");
+        //printf("***********************************************************\n");
         if (gameOver(SILVER))
             break;
         boardCheck = 0L;

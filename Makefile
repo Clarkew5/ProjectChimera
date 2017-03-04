@@ -11,7 +11,7 @@ algo.o: algo.c algo.h
 
 hash.o: hash.c hash.h
 
-test: test.c game.o algo.o
+test: test.c game.o algo.o hash.o
 
 arimaa: arimaa.c game.o algo.o hash.o
 

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include "algo.h"
 #include "game.h"
 
 struct Hash{
@@ -20,7 +21,7 @@ struct Entry{
 
 struct Hash *createHash(size_t size);
 int destroyHash(struct Hash *hash);
-int insertEntry(uint16_t move[], struct Hash *hash);
+int insertEntry(uint16_t *move, struct Hash *hash);
 //char *lookUp(char *key, struct Hash *hash);
 int printTable(struct Hash *hash);
 

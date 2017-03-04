@@ -10,6 +10,7 @@
 #include <time.h>
 #include <limits.h>
 #include "game.h"
+#include "hash.h"
 
 /*--move masks----------------------------------------------------------------*/
 #define pieceMask       0b0000111100000000
@@ -62,6 +63,8 @@ int numberOfPushes(uint64_t *bitboards, bool isGold);
 int numberOfPulls(uint64_t *bitboards, bool isGold);
 uint64_t *generateMoveBitboards(bool isGold);
 int printBitboard(uint64_t bitboard);
+int printMove(uint16_t move);
 bool gameOver(bool isGold);
 int negaMaxSearch(bool isGold, double tTime);
+struct Hash *branchHash(bool isGold);
 #endif

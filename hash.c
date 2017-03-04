@@ -1,11 +1,11 @@
 #include "hash.h"
 
 struct Hash *createHash(size_t size){
-    struct Hash *hash = malloc(sizeof(struct Hash));
+    struct Hash *hash = calloc(1, sizeof(struct Hash));
     if (hash == NULL)
         return NULL;
     hash->size = size;
-    hash->entries = calloc(size, sizeof(struct Entry*));
+    hash->entries = calloc(size, sizeof(struct Entry *));
     if (hash->entries == NULL){
         printf("Calloc failed. No memory for hash.\n");
         return NULL;
@@ -46,17 +46,17 @@ int hashFunction(struct Hash *hash){
     return index % hash->size;
 }
 
-int insertEntry(uint16_t move[], struct Hash *hash){
+int insertEntry(uint16_t *move, struct Hash *hash){
     int index = hashFunction(hash);
     struct Entry *p = *(hash->entries + index);
-
     if (p == NULL){
-        for (int i; i < 6; i++){
-            p->gold[i] = ARIMAABOARD.gold[i];
-            p->silver[i] = ARIMAABOARD.silver[i];
+        p = calloc(1, sizeof(struct Entry));
+        for (int i =0 ; i < 6; i++){
+            *(p->gold + i) = ARIMAABOARD.gold[i];
+            *(p->silver + i) = ARIMAABOARD.silver[i];
         }
-        for (int i; i < 4; i++)
-            p->move[i] = move[i];
+        for (int i = 0; i < 4; i++)
+            *(p->move + i) = move[i];
         (*(hash->entries + index)) = p;
     }
     else{
@@ -76,15 +76,29 @@ int insertEntry(uint16_t move[], struct Hash *hash){
                     return 1;
             p = p->next;
         }
-        p->next = malloc(sizeof(struct Entry));
+        p->next = calloc(1, sizeof(struct Entry));
         p = p->next;
-        for (int i; i < 6; i++){
+        for (int i = 0; i < 6; i++){
             p->gold[i] = ARIMAABOARD.gold[i];
             p->silver[i] = ARIMAABOARD.silver[i];
         }
-        for (int i; i < 4; i++)
+        for (int i = 0; i < 4; i++)
             p->move[i] = move[i];
     }
     return 0;
 }
 
+int printTable(struct Hash *hash){
+    for (int i = 0; i < hash->size; i++){
+        struct Entry *p = *(hash->entries + i);
+        while(p != NULL){
+            for (int i = 0; i < 4; i++){
+                printMove(p->move[i]);
+            }
+            printf(">");
+            p = p->next;
+        }
+        printf("No Entry\n");
+    }
+    return 0;
+}
