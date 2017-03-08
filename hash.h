@@ -12,7 +12,7 @@ struct Hash{
     struct Entry **entries;
 };
 
-struct Entry{    
+struct Entry{//storing the whole board eats a lot of memory and should be changed    
     uint64_t gold[6];   //key
     uint64_t silver[6]; //key
     uint16_t move[4];   //value

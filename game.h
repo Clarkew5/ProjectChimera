@@ -15,6 +15,21 @@
 #define CAMMEL 4
 #define ELEPHANT 5
 
+#define trapMask 0b0000000000001111
+#define rTRAPPED 0b0000000000000001
+#define cTRAPPED 0b0000000000000010
+#define dTRAPPED 0b0000000000000011
+#define hTRAPPED 0b0000000000000100
+#define mTRAPPED 0b0000000000000101
+#define eTRAPPED 0b0000000000000110
+#define RTRAPPED 0b0000000000000111
+#define CTRAPPED 0b0000000000001000
+#define DTRAPPED 0b0000000000001001
+#define HTRAPPED 0b0000000000001010
+#define MTRAPPED 0b0000000000001011
+#define ETRAPPED 0b0000000000001100
+
+
 struct Board{
     uint64_t gold[6];
     uint64_t silver[6];
@@ -26,6 +41,6 @@ extern struct Board ARIMAABOARD;
 int makeBoard(char *filepath);
 int printBoard();
 int updateBoard(char *move);
-int updateTraps(bool isGold, int animal, int square);
+uint16_t updateTraps();
 
 #endif

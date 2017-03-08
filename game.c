@@ -7,6 +7,7 @@ struct Board ARIMAABOARD = {
 };
 
 int makeBoard(char *filepath){
+    //sets all the board global variables to 0
     if (filepath == NULL){    
         for (int i = 0; i < 6; i++){
             ARIMAABOARD.gold[i] = 0L;
@@ -21,7 +22,7 @@ int makeBoard(char *filepath){
 }
 
 int printBoard(){
-    printf(" +----------------+\n");
+    printf(" +-----------------+\n");
     for (int shift = 0; shift < 64; shift++){
         uint64_t i = 1L << shift;
         if (shift%8 == 0)
@@ -65,41 +66,92 @@ int printBoard(){
 	return 0;
 }
 
-int updateTraps(bool isGold, int animal, int square){
-    if (square == 18 || square == 21 || square == 42 || square == 45){
-        uint64_t friends = 0L;
-        if (isGold){
-            for (int i = 0; i < 6; i++){
-                friends |= ARIMAABOARD.gold[i];
-            }
-            if ((1L << (square + 8) & friends) == 0L &&
-                (1L << (square - 8) & friends) == 0L &&
-                (1L << (square + 1) & friends) == 0L &&
-                (1L << (square - 1) & friends) == 0L){
-                    ARIMAABOARD.gold[animal] &= ~(1L << square);
-                    ARIMAABOARD.empty |= 1L << square;
+uint16_t updateTraps(){
+    /*updates the trap squares and returns a 16 bit number that represents
+      which peices have fallen into which traps*/ 
+    int squares[4] = {18, 21, 42, 45};
+    uint16_t updatedTraps = 0;
+    uint64_t friends = 0L;
+    for (int i = 0; i < 4; i++){
+        if (((1L << squares[i]) & ARIMAABOARD.empty) != 0L) continue;
+        for (int j = 0; j < 6; j++){
+            if (((1L << squares[i]) & ARIMAABOARD.gold[j]) != 0L){
+                for (int p = 0; p < 6; p++){
+                    friends |= ARIMAABOARD.gold[p];
                 }
-        }
-        else{
-            for (int i = 0; i < 6; i++){
-                friends |= ARIMAABOARD.silver[i];
+                if ((1L << (squares[i] + 8) & friends) == 0L &&
+                    (1L << (squares[i] - 8) & friends) == 0L &&
+                    (1L << (squares[i] + 1) & friends) == 0L &&
+                    (1L << (squares[i] - 1) & friends) == 0L){
+                        ARIMAABOARD.gold[j] &= ~(1L << squares[i]);
+                        ARIMAABOARD.empty |= 1L << squares[i];
+                        switch (j){
+                            case RABBIT:
+                                updatedTraps |= (RTRAPPED << 4*i);
+                                break;
+                            case CAT:
+                                updatedTraps |= (CTRAPPED << 4*i);
+                                break;
+                            case DOG:
+                                updatedTraps |= (DTRAPPED << 4*i);
+                                break;
+                            case HORSE:
+                                updatedTraps |= (HTRAPPED << 4*i);
+                                break;
+                            case CAMMEL:
+                                updatedTraps |= (MTRAPPED << 4*i);
+                                break;
+                            case ELEPHANT:
+                                updatedTraps |= (ETRAPPED << 4*i);
+                                break;
+                        }
+                    
+                }
             }
-            if ((1L << (square + 8) & friends) == 0L &&
-                (1L << (square - 8) & friends) == 0L &&
-                (1L << (square + 1) & friends) == 0L &&
-                (1L << (square - 1) & friends) == 0L){
-                    ARIMAABOARD.silver[animal] &= ~(1L << square);
-                    ARIMAABOARD.empty ^= 1L << square;
+            if (((1L << squares[i]) & ARIMAABOARD.silver[j]) != 0L){
+                for (int p = 0; p < 6; p++){
+                    friends |= ARIMAABOARD.silver[p];
+                }
+
+                if ((1L << (squares[i] + 8) & friends) == 0L &&
+                    (1L << (squares[i] - 8) & friends) == 0L &&
+                    (1L << (squares[i] + 1) & friends) == 0L &&
+                    (1L << (squares[i] - 1) & friends) == 0L){
+                        ARIMAABOARD.silver[j] &= ~(1L << squares[i]);
+                        ARIMAABOARD.empty ^= 1L << squares[i];
+                        switch (j){
+                            case RABBIT:
+                                updatedTraps |= (rTRAPPED << 4*i);
+                                break;
+                            case CAT:
+                                updatedTraps |= (cTRAPPED << 4*i);
+                                break;
+                            case DOG:
+                                updatedTraps |= (dTRAPPED << 4*i);
+                                break;
+                            case HORSE:
+                                updatedTraps |= (hTRAPPED << 4*i);
+                                break;
+                            case CAMMEL:
+                                updatedTraps |= (mTRAPPED << 4*i);
+                                break;
+                            case ELEPHANT:
+                                updatedTraps |= (eTRAPPED << 4*i);
+                                break;
+                        }
+                }
             }
         }
-        return 0;
     }
-    else return 1;
+    return updatedTraps;
 }
 
 int updateBoard(char *move){
+    /*updates the board after taking in a string that represents a move. 
+      Used to make moves read from stdin*/
     char *colLetters = "abcdefgh";   
     char *rowNumbers = "87654321";
+    //used for the initial board set up moves
     if (strlen(move) == 63){
         printf("%s\n", move);
         do{
@@ -162,6 +214,7 @@ int updateBoard(char *move){
         } while (*(move-1) != '\0');
                 
     }
+    //game moves after set up
 	else if ((strlen(move) < 21) && ((strlen(move) + 1)%5 == 0)){
         printf("%s\n", move);        
         do {

@@ -73,7 +73,7 @@ int insertEntry(uint16_t *move, struct Hash *hash){
                 p->silver[3] == ARIMAABOARD.silver[3] &&
                 p->silver[4] == ARIMAABOARD.silver[4] &&
                 p->silver[5] == ARIMAABOARD.silver[5])
-                    return 1;
+                    return 1;//checks to see if the board is already in the hash
             p = p->next;
         }
         p->next = calloc(1, sizeof(struct Entry));
