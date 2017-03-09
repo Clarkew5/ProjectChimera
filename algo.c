@@ -1245,9 +1245,9 @@ int heuristic(bool isGold){
     //needs a function to represent wave, or add "wave score" to move functions
 
     if(isGold)
-        h = (gMaterial - sMaterial) + 2*(numOfGFrozen - numOfSFrozen);
+        h = (gMaterial - sMaterial) + (numOfSFrozen - numOfGFrozen);
     else
-        h = (sMaterial - gMaterial) + 2*(numOfSFrozen - numOfGFrozen);
+        h = (sMaterial - gMaterial) + (numOfGFrozen - numOfSFrozen);
     return h;
 }
 
