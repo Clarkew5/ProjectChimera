@@ -3,7 +3,12 @@
 struct Board ARIMAABOARD = {
     .gold = {0L, 0L, 0L, 0L, 0L, 0L},
     .silver = {0L, 0L, 0L, 0L, 0L, 0L},
-    .empty = ~0L
+    .empty = ~0L,
+    .weights = {1, 2, 3, 5, 9, 13},
+    .gMaterial = 50,
+    .sMaterial = 50,
+    .gWave = 0,
+    .sWave = 0
 };
 
 int makeBoard(char *filepath){
@@ -88,21 +93,27 @@ uint16_t updateTraps(){
                         switch (j){
                             case RABBIT:
                                 updatedTraps |= (RTRAPPED << 4*i);
+                                ARIMAABOARD.gMaterial -= ARIMAABOARD.weights[0];
                                 break;
                             case CAT:
                                 updatedTraps |= (CTRAPPED << 4*i);
+                                ARIMAABOARD.gMaterial -= ARIMAABOARD.weights[1];
                                 break;
                             case DOG:
                                 updatedTraps |= (DTRAPPED << 4*i);
+                                ARIMAABOARD.gMaterial -= ARIMAABOARD.weights[2];
                                 break;
                             case HORSE:
                                 updatedTraps |= (HTRAPPED << 4*i);
+                                ARIMAABOARD.gMaterial -= ARIMAABOARD.weights[3];
                                 break;
                             case CAMMEL:
                                 updatedTraps |= (MTRAPPED << 4*i);
+                                ARIMAABOARD.gMaterial -= ARIMAABOARD.weights[4];
                                 break;
                             case ELEPHANT:
                                 updatedTraps |= (ETRAPPED << 4*i);
+                                ARIMAABOARD.gMaterial -= ARIMAABOARD.weights[5];
                                 break;
                         }
                     
@@ -122,21 +133,27 @@ uint16_t updateTraps(){
                         switch (j){
                             case RABBIT:
                                 updatedTraps |= (rTRAPPED << 4*i);
+                                ARIMAABOARD.sMaterial -= ARIMAABOARD.weights[0];
                                 break;
                             case CAT:
                                 updatedTraps |= (cTRAPPED << 4*i);
+                                ARIMAABOARD.sMaterial -= ARIMAABOARD.weights[1];
                                 break;
                             case DOG:
                                 updatedTraps |= (dTRAPPED << 4*i);
+                                ARIMAABOARD.sMaterial -= ARIMAABOARD.weights[2];
                                 break;
                             case HORSE:
                                 updatedTraps |= (hTRAPPED << 4*i);
+                                ARIMAABOARD.sMaterial -= ARIMAABOARD.weights[3];
                                 break;
                             case CAMMEL:
                                 updatedTraps |= (mTRAPPED << 4*i);
+                                ARIMAABOARD.sMaterial -= ARIMAABOARD.weights[4];
                                 break;
                             case ELEPHANT:
                                 updatedTraps |= (eTRAPPED << 4*i);
+                                ARIMAABOARD.sMaterial -= ARIMAABOARD.weights[5];
                                 break;
                         }
                 }

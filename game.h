@@ -34,6 +34,11 @@ struct Board{
     uint64_t gold[6];
     uint64_t silver[6];
     uint64_t empty;
+    int weights[6];
+    int gMaterial;
+    int sMaterial;
+    int gWave;
+    int sWave;
 };
 
 extern struct Board ARIMAABOARD;

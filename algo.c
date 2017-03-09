@@ -1230,24 +1230,20 @@ int heuristic(bool isGold){
     int weights[6] = {1, 2, 3, 5, 9, 13}; //weights borrowed from bomb.
     int numOfGFrozen = 0;
     int numOfSFrozen = 0;
-    int gMaterial = 0; //could be incremented in the trap functions
-    int sMaterial = 0; 
     int h;
 
     for (int i = 0; i < 5; i++){
         numOfGFrozen += weights[i] * __builtin_popcountll(frozen(i, true));
         numOfSFrozen += weights[i] * __builtin_popcountll(frozen(i, false));
-        gMaterial += weights[i] * __builtin_popcountll(ARIMAABOARD.gold[i]);
-        sMaterial += weights[i] * __builtin_popcountll(ARIMAABOARD.silver[i]);
     }
-    gMaterial += weights[6] * __builtin_popcountll(ARIMAABOARD.gold[6]);
-    sMaterial += weights[6] * __builtin_popcountll(ARIMAABOARD.silver[6]);
     //needs a function to represent wave, or add "wave score" to move functions
 
     if(isGold)
-        h = (gMaterial - sMaterial) + (numOfSFrozen - numOfGFrozen);
+        h = (ARIMAABOARD.gMaterial - ARIMAABOARD.sMaterial)
+          + (numOfSFrozen - numOfGFrozen);
     else
-        h = (sMaterial - gMaterial) + (numOfGFrozen - numOfSFrozen);
+        h = (ARIMAABOARD.sMaterial - ARIMAABOARD.gMaterial)
+          + (numOfGFrozen - numOfSFrozen);
     return h;
 }
 
@@ -1386,72 +1382,84 @@ int undoTraps(uint16_t updatedTraps){
         if (test == (RTRAPPED << 4*i)){
             ARIMAABOARD.gold[RABBIT] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
+            ARIMAABOARD.gMaterial += ARIMAABOARD.weights[0];
             continue;
         }
 
         if (test == (CTRAPPED << 4*i)){
             ARIMAABOARD.gold[CAT] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
+            ARIMAABOARD.gMaterial += ARIMAABOARD.weights[1];
             continue;
         }
 
         if (test == (DTRAPPED << 4*i)){
             ARIMAABOARD.gold[DOG] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
+            ARIMAABOARD.gMaterial += ARIMAABOARD.weights[2];
             continue;
         }
 
         if (test == (HTRAPPED << 4*i)){
             ARIMAABOARD.gold[HORSE] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
+            ARIMAABOARD.gMaterial += ARIMAABOARD.weights[3];
             continue;
         }
 
         if (test == (MTRAPPED << 4*i)){
             ARIMAABOARD.gold[CAMMEL] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
+            ARIMAABOARD.gMaterial += ARIMAABOARD.weights[4];
             continue;
         }
 
         if (test == (ETRAPPED << 4*i)){
             ARIMAABOARD.gold[ELEPHANT] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
+            ARIMAABOARD.gMaterial += ARIMAABOARD.weights[5];
             continue;
         }
 
         if (test == (rTRAPPED << 4*i)){
             ARIMAABOARD.silver[RABBIT] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
+            ARIMAABOARD.sMaterial += ARIMAABOARD.weights[0];
             continue;
         }
 
         if (test == (cTRAPPED << 4*i)){
             ARIMAABOARD.silver[CAT] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
+            ARIMAABOARD.sMaterial += ARIMAABOARD.weights[1];
             continue;
         }
 
         if (test == (dTRAPPED << 4*i)){
             ARIMAABOARD.silver[DOG] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
+            ARIMAABOARD.sMaterial += ARIMAABOARD.weights[2];
             continue;
         }
 
         if (test == (hTRAPPED << 4*i)){
             ARIMAABOARD.silver[HORSE] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
+            ARIMAABOARD.sMaterial += ARIMAABOARD.weights[3];
             continue;
         }
 
         if (test == (mTRAPPED << 4*i)){
             ARIMAABOARD.silver[CAMMEL] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
+            ARIMAABOARD.sMaterial += ARIMAABOARD.weights[4];
             continue;
         }
 
         if (test == (eTRAPPED << 4*i)){
             ARIMAABOARD.silver[ELEPHANT] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
+            ARIMAABOARD.sMaterial += ARIMAABOARD.weights[5];
             continue;
         }
 
