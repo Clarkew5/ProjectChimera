@@ -644,6 +644,10 @@ int updateBoardBit(uint16_t move){
         case(DIRECTIONN):
             i2 = i1;
             j2 = j1 - 1;
+            if (isGold)
+                ARIMAABOARD.gWave++;
+            else
+                ARIMAABOARD.sWave--;
             break;
         case(DIRECTIONE):
             i2 = i1 + 1;
@@ -652,6 +656,10 @@ int updateBoardBit(uint16_t move){
         case(DIRECTIONS):
             i2 = i1;
             j2 = j1 + 1;
+            if (!isGold)
+                ARIMAABOARD.sWave++;
+            else
+                ARIMAABOARD.gWave--;
             break;
         case(DIRECTIONW):
             i2 = i1 - 1;
@@ -1239,17 +1247,63 @@ int heuristic(bool isGold){
     //needs a function to represent wave, or add "wave score" to move functions
 
     if(isGold)
-        h = (ARIMAABOARD.gMaterial - ARIMAABOARD.sMaterial)
+        h = 2*(ARIMAABOARD.gMaterial - ARIMAABOARD.sMaterial)
+          + (ARIMAABOARD.gWave - ARIMAABOARD.sWave)
           + (numOfSFrozen - numOfGFrozen);
     else
-        h = (ARIMAABOARD.sMaterial - ARIMAABOARD.gMaterial)
+        h = 2*(ARIMAABOARD.sMaterial - ARIMAABOARD.gMaterial)
+          + (ARIMAABOARD.sWave - ARIMAABOARD.gWave)
           + (numOfGFrozen - numOfSFrozen);
     return h;
 }
 
 int undoMove(uint16_t lastMove){
     uint16_t move = lastMove;
-    move &= ~(directionMask); 
+    move &= ~(directionMask);
+    //gets if the move is gold to update gWave and sWave
+    bool isGold;
+    switch(move & pieceMask){
+        case(SILVERR):
+            isGold = false;
+            break; 
+        case(SILVERC):
+            isGold = false;
+            break;
+        case(SILVERD):
+            isGold = false;
+            break;
+        case(SILVERH):
+            isGold = false;
+            break;
+        case(SILVERM):
+            isGold = false;
+            break;
+        case(SILVERE):
+            isGold = false;
+            break;
+        case(GOLDR):
+            isGold = true;
+            break;
+        case(GOLDC):
+            isGold = true;
+            break;
+        case(GOLDD):
+            isGold = true;
+            break;
+        case(GOLDH):
+            isGold = true;
+            break;
+        case(GOLDM):
+            isGold = true;
+            break;
+        case(GOLDE):
+            isGold = true;
+            break;
+        default:
+            printf("move corrupt\n");
+            break;
+    }
+
     switch (lastMove & directionMask){
         case(DIRECTIONN):
             move |= DIRECTIONS;
@@ -1277,6 +1331,10 @@ int undoMove(uint16_t lastMove){
                     move |= ROW1;
                     break;
             }
+            if(!isGold)
+                ARIMAABOARD.sWave++;
+            else
+                ARIMAABOARD.gWave--;
             break;
         case(DIRECTIONE):
             move |= DIRECTIONW;
@@ -1331,6 +1389,10 @@ int undoMove(uint16_t lastMove){
                     move |= ROW8;
                     break;
             }
+            if(isGold)
+                ARIMAABOARD.gWave++;
+            else
+                ARIMAABOARD.sWave--;
             break;
         case(DIRECTIONW):
             move |= DIRECTIONE;
@@ -1851,8 +1913,8 @@ struct Hash *branchHash(bool isGold){
 
 int negaMax(uint16_t *maxMoves, int depth, bool isGold, int A, int B, double tTime, time_t startTime){
     if (depth == 0){ //endcase
-        //int h = heuristic(isGold);
-        int h = rand()%1000;
+        int h = heuristic(isGold);
+        //int h = rand()%1000;
         return h;
     }
     else if (gameOver(isGold)){
@@ -1900,7 +1962,7 @@ int negaMaxSearch(bool isGold, double tTime){
     int A = INT_MIN;
     int B = INT_MAX;
     uint16_t *maxMoves = calloc(4, sizeof(uint16_t));
-    for (int depth = 1; depth < 3; depth += 2){
+    for (int depth = 2; depth < 4; depth += 2){
         negaMax(maxMoves, depth, isGold, A, B, tTime, startTime);
     }
     //make moves and print them out
