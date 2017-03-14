@@ -1,10 +1,11 @@
 #include "game.h"
 
 struct Board ARIMAABOARD = {
+    //Initalizes all global variables to their start state
     .gold = {0L, 0L, 0L, 0L, 0L, 0L},
     .silver = {0L, 0L, 0L, 0L, 0L, 0L},
     .empty = ~0L,
-    .weights = {1, 2, 3, 5, 9, 13},
+    .weights = {1, 2, 3, 5, 9, 13}, //weights borrowed from bomb.
     .gMaterial = 50,
     .sMaterial = 50,
     .gWave = 0,
@@ -73,7 +74,7 @@ int printBoard(){
 
 uint16_t updateTraps(){
     /*updates the trap squares and returns a 16 bit number that represents
-      which peices have fallen into which traps*/ 
+      which pieces have fallen into which traps*/ 
     int squares[4] = {18, 21, 42, 45};
     uint16_t updatedTraps = 0;
     uint64_t friends = 0L;
@@ -224,7 +225,7 @@ int updateBoard(char *move){
                     ARIMAABOARD.empty ^= 1L << ((8*j) + i);
                     break;
                 default:
-                    printf("error no such peice\n");
+                    printf("error no such piece\n");
                     return 1;
             }
             move += 4;
@@ -257,7 +258,7 @@ int updateBoard(char *move){
                     j2 = j2-1;
                     break;
                 default:
-                    printf("error no such peice\n");
+                    printf("error no such piece\n");
                     return 1;
             }        
             switch (*move){
@@ -348,7 +349,7 @@ int updateBoard(char *move){
                 case 'p':
                     return 0;
                 default:
-                    printf("error no such peice\n");
+                    printf("error no such piece\n");
                     return 1;
             }
             move += 5;

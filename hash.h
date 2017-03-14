@@ -9,6 +9,7 @@
 
 struct Hash{
     size_t size;
+    int numOfElements;
     struct Entry **entries;
 };
 

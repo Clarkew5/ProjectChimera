@@ -5,6 +5,7 @@ struct Hash *createHash(size_t size){
     if (hash == NULL)
         return NULL;
     hash->size = size;
+    hash->numOfElements = 0;
     hash->entries = calloc(size, sizeof(struct Entry *));
     if (hash->entries == NULL){
         printf("Calloc failed. No memory for hash.\n");
@@ -85,6 +86,7 @@ int insertEntry(uint16_t *move, struct Hash *hash){
         for (int i = 0; i < 4; i++)
             p->move[i] = move[i];
     }
+    hash->numOfElements++;
     return 0;
 }
 
