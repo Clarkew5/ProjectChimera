@@ -181,6 +181,10 @@ uint64_t *generateMoveBitboards(bool isGold){
     /* makes all the bitboards for each game state. 
        Commented out code was used for testing*/
     uint64_t *bitboards = malloc(16 * sizeof(uint64_t));
+    if (bitboards == NULL){
+        printf("malloc failed");
+        exit(1);
+    }
     for (int p = 0; p < 6; p++){ //makes the move bitboards for each piece
         //printf("%d\n", p);
         *(bitboards + p) = move(p, isGold);
@@ -656,10 +660,10 @@ int updateBoardBit(uint16_t move){
         case(DIRECTIONS):
             i2 = i1;
             j2 = j1 + 1;
-            if (!isGold)
-                ARIMAABOARD.sWave++;
-            else
+            if (isGold)
                 ARIMAABOARD.gWave--;
+            else
+                ARIMAABOARD.sWave++;
             break;
         case(DIRECTIONW):
             i2 = i1 - 1;
@@ -674,14 +678,12 @@ int updateBoardBit(uint16_t move){
         ARIMAABOARD.empty ^= 1L << ((8*j1) + i1);
         ARIMAABOARD.gold[p] ^= 1L << ((8*j2) + i2);
         ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
-        //updateTraps(true, p, 8*j2 + i2);
     }
     else{
         ARIMAABOARD.silver[p] ^= 1L << ((8*j1) + i1);
         ARIMAABOARD.empty ^= 1L << ((8*j1) + i1);
         ARIMAABOARD.silver[p] ^= 1L << ((8*j2) + i2);
         ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
-        //updateTraps(false, p, 8*j2 + i2);
     }
     return 0;
 }
@@ -814,6 +816,10 @@ uint16_t *movesOfASquare(bool isGold, uint64_t *bitboards, int shift, int numOfM
     uint64_t square = 1L << shift;
     uint64_t piece = 0L;
     uint16_t *moves = malloc(numOfMoves * sizeof(uint16_t));
+    if (moves == NULL){
+        printf("malloc failed");
+        exit(1);
+    }
     int p = 0;
     if (isGold){
         for (int i = 0; i < 6; i++){
@@ -862,6 +868,10 @@ uint16_t *movesToASquare(bool isGold, uint64_t *bitboards, int shift, int numOfM
       This is used for pulls*/
     uint64_t square = 1L << shift;
     uint16_t *moves = malloc((numOfMoves) * sizeof(uint16_t));
+    if (moves == NULL){
+        printf("malloc failed");
+        exit(1);
+    }
     if (isGold){
         for (int i = 0; i < numOfMoves;){
             for(int p = 0; p < 6; p++){
@@ -930,8 +940,15 @@ uint16_t *generateMovesFromBoard(uint64_t *bitboards, bool isGold, int movesLeft
         numOfPulls = 2*numberOfPulls(bitboards, isGold);
     }
     int size = numOfMoves + numOfPushes + numOfPulls;
-
+    if (size == 0){
+        printf("ERROR\n");
+        exit(1);
+    }
     uint16_t *moves = calloc(size, sizeof(uint16_t));
+    if(moves == NULL){
+        printf("calloc failed");
+        exit(1);
+    }
 
     for(int i = 0; i < numOfMoves;){//move
         *(moves + i) = 0L;
@@ -1110,10 +1127,10 @@ int randomMovePushPull(uint64_t *bitboards, bool isGold, int movesLeft){
     }
     int size = numOfMoves + numOfPushes + numOfPulls;
     if (size == 0){
-        if (isGold)
-            printf("Silver wins, Gold has no more moves\n");
-        else
-            printf("Gold wins, Silver has no more moves\n");
+        //if (isGold)
+            //printf("Silver wins, Gold has no more moves\n");
+        //else
+            //printf("Gold wins, Silver has no more moves\n");
         return 3;
     } 
     time_t t;
@@ -1160,7 +1177,7 @@ int randomMovePushPull(uint64_t *bitboards, bool isGold, int movesLeft){
         free(moves);
         return 2;
     }
-
+    return 3;
 }
 
 bool inGoal(bool isGold){
@@ -1181,21 +1198,21 @@ bool inGoal(bool isGold){
 bool gameOver(bool isGold){
     if(isGold){
         if (ARIMAABOARD.gold[0] == 0L){
-            printf("Silver Won by trapping Gold's rabbits\n");
+            //printf("Silver Won by trapping Gold's rabbits\n");
             return true;
         }
         if (inGoal(isGold)){
-            printf("Gold got a rabbit to Silver's home row\n");
+            //printf("Gold got a rabbit to Silver's home row\n");
             return true;
         }
     }
     else{
         if (ARIMAABOARD.silver[0] == 0L){
-            printf("Gold Won by trapping Silver's rabbits\n");
+            //printf("Gold Won by trapping Silver's rabbits\n");
             return true;
         }
         if (inGoal(isGold)){
-            printf("Silver got a rabbit to Gold's home row\n");
+            //printf("Silver got a rabbit to Gold's home row\n");
             return true;
         }
     }
@@ -1252,14 +1269,13 @@ int heuristic(bool isGold){
 
     /* the wave value is updated in the move and unmove functions while material
        is updated when traps animals fall into traps*/
-
     if(isGold)
-        h = 2*(ARIMAABOARD.gMaterial - ARIMAABOARD.sMaterial)
-          + (ARIMAABOARD.gWave - ARIMAABOARD.sWave)
+        h = (ARIMAABOARD.gMaterial - ARIMAABOARD.sMaterial)
+          //+ (ARIMAABOARD.gWave - ARIMAABOARD.sWave)
           + (numOfSFrozen - numOfGFrozen);
     else
-        h = 2*(ARIMAABOARD.sMaterial - ARIMAABOARD.gMaterial)
-          + (ARIMAABOARD.sWave - ARIMAABOARD.gWave)
+        h = (ARIMAABOARD.sMaterial - ARIMAABOARD.gMaterial)
+          //+ (ARIMAABOARD.sWave - ARIMAABOARD.gWave)
           + (numOfGFrozen - numOfSFrozen);
     return h;
 }
@@ -1269,7 +1285,7 @@ int undoMove(uint16_t lastMove){
     move &= ~(directionMask);
     //the switch statement checks if the move is gold to update gWave or sWave
     bool isGold;
-    switch(move & pieceMask){
+    switch(lastMove & pieceMask){
         case(SILVERR):
             isGold = false;
             break; 
@@ -1338,10 +1354,10 @@ int undoMove(uint16_t lastMove){
                     move |= ROW1;
                     break;
             }
-            if(!isGold)
-                ARIMAABOARD.sWave++;
-            else
+            if(isGold)
                 ARIMAABOARD.gWave--;
+            else
+                ARIMAABOARD.sWave++;
             break;
         case(DIRECTIONE):
             move |= DIRECTIONW;
@@ -1823,7 +1839,6 @@ int generateMoves(bool isGold, uint16_t *moves, int movesLeft, struct Hash *move
                                 updateBoardBit(lastMove2);
                                 uint16_t updatedTraps2 = updateTraps();
                                 moves[4-movesLeft+1] = lastMove2;
-                                
 
                                 generateMoves(isGold, moves, movesLeft-2, moveHash);
 
@@ -1907,24 +1922,26 @@ int generateMoves(bool isGold, uint16_t *moves, int movesLeft, struct Hash *move
 
 struct Hash *branchHash(bool isGold){
     uint16_t *moves = calloc(4, sizeof(uint16_t));
-    struct Hash *moveHash = createHash(56099);
+    struct Hash *moveHash = createHash(6011);
     //large enough to all the unique moves
     generateMoves(isGold, moves, 4, moveHash); //initial recursive call
+    //printf("number of elements in hash: %d\n", moveHash->numOfElements);
     //getchar();
     //printTable(moveHash);
     free(moves);
     return moveHash;
 }
 
-int negaMax(uint16_t *maxMoves, int depth, bool isGold, int A, int B, double tTime, time_t startTime){
-    if (depth == 0){ //endcase
-        int h = heuristic(isGold);
-        //int h = rand()%1000;
-        return h;
-    }
-    else if (gameOver(isGold)){
+int negaMax(int depth, bool isGold, int A, int B, double tTime, time_t startTime){
+    if (gameOver(isGold)){
         return INT_MAX;
     }
+    if (depth == 0){ //endcase
+        int h = heuristic(isGold);
+        //int h = rand()%1000 + 1;
+        return h;
+    }
+
     int max = INT_MIN;
     struct Hash *branches = branchHash(isGold);//makes all the moves
     for (int i = 0; i < branches->size; i++){ 
@@ -1938,23 +1955,21 @@ int negaMax(uint16_t *maxMoves, int depth, bool isGold, int A, int B, double tTi
                 traps[j] = updateTraps();
             }
             //recursive call
-            int score = -negaMax(maxMoves, depth-1, !isGold, -B, -A, tTime, startTime);
+            int score = -negaMax(depth-1, !isGold, -B, -A, tTime, startTime);
             //undos moves
             for (int j = 0; j < 4; j++){
                 undoTraps(traps[3-j]);
                 undoMove(p->move[3-j]);
             }
 
-            if (score > max){
-                for(int j = 0; j < 4; j++)
-                    *(maxMoves + j) = *(p->move + j); 
-                    //copy max moves to maxMoves array
+            if (score > max)
                 max = score;
-            }
             if (score > A)
                 A = score;
-            if (A >= B)
+            if (A >= B){
+                destroyHash(branches);
                 return A;
+            }
             p = p->next;
         }
     }
@@ -1966,10 +1981,48 @@ int negaMaxSearch(bool isGold, double tTime){
     time_t startTime = time(NULL);
     int A = INT_MIN;
     int B = INT_MAX;
+    int max = INT_MIN;
     uint16_t *maxMoves = calloc(4, sizeof(uint16_t));
-    for (int depth = 1; depth < 2; depth += 2){
-        negaMax(maxMoves, depth, isGold, A, B, tTime, startTime);
+    struct Hash *branches = branchHash(isGold);//makes all the moves
+    int numOfElementsChecked = 0;
+    printf("000");
+    for (int depth = 3; depth < 4; depth += 2){
+        for (int i = 0; i < branches->size; i++){ 
+            struct Entry *p = *(branches->entries + i);
+            while(p != NULL){
+                //steps through the hash function
+                uint16_t traps[4] = {0, 0, 0, 0};
+                //make the moves
+                for (int j = 0; j < 4; j++){
+                    updateBoardBit(p->move[j]);
+                    traps[j] = updateTraps();
+                }
+                //recursive call
+                int score = -negaMax(depth-1, !isGold, -B, -A, tTime, startTime);
+                //undos moves
+                for (int j = 0; j < 4; j++){
+                    undoTraps(traps[3-j]);
+                    undoMove(p->move[3-j]);
+                }
+
+                if (score > max){
+                    //printf("[");
+                    for(int j = 0; j < 4; j++){
+                       *(maxMoves + j) = *(p->move + j);
+                        //printMove(*(maxMoves + j));
+                    }
+                    //printf("] h:%d\n", score);
+                        //copy max moves to maxMoves array
+                    max = score;
+                }
+                p = p->next;
+                numOfElementsChecked++;
+                printf("\b\b\b%03.0f", ((double)numOfElementsChecked/(double)branches->numOfElements) * 100);
+            }
+        }
     }
+    destroyHash(branches);
+    printf("\n");
     //make moves and print them out
     for (int i = 0; i < 4; i++){ 
         updateBoardBit(*(maxMoves + i));
@@ -1980,9 +2033,192 @@ int negaMaxSearch(bool isGold, double tTime){
     printf("\n");  
     return 0;
 }
+//------------------------------------------------------------------------------
+bool goldWin(bool isGold){
+    if(isGold){
+        if (ARIMAABOARD.gold[0] == 0L)
+            return false;
+        if (inGoal(isGold))
+            return true;
+    }
+    else{
+        if (ARIMAABOARD.silver[0] == 0L)
+            return true;
+        if (inGoal(isGold))
+            return false;
+    }
+    return false;
+}
 
-/*------------------------------------------------------------------------------
+bool makeRandomMove(bool isGold, int movesLeft){
+    bool goldWon;
+    if (!gameOver(isGold)){
+        if (movesLeft == 0){
+            goldWon = makeRandomMove(!isGold, 4);
+            //printf("switch\n");
+            return goldWon;
+        }
 
-------------------------------------------------------------------------------*/
+        uint64_t *bitboards = generateMoveBitboards(isGold);
+        int numOfMoves = numberOfMoves(bitboards, isGold);
+        int numOfPushes = 0;
+        int numOfPulls = 0;
+        if (movesLeft >= 2){
+            numOfPushes = 2*numberOfPushes(bitboards, isGold);
+            numOfPulls = 2*numberOfPulls(bitboards, isGold);
+        }
+
+        int size = numOfMoves + numOfPushes + numOfPulls;
+        if (size == 0){
+            free(bitboards);
+            if (isGold)
+                return false;
+            else
+                return true;
+        }
+        //printf("1\n");
+        //for (int i = 0; i < 16; i++){
+            //printf("%d\n-----------\n", i);
+            //printBitboard(*(bitboards + i));
+        //}
+        uint16_t *moves = generateMovesFromBoard(bitboards, isGold, movesLeft);
+        //printf("2\n");
+        free(bitboards);
+
+
+        int randomIndex = (rand() % size);
+        //getchar();
+        if (randomIndex >= 0 && randomIndex < numOfMoves){
+            uint16_t move = *(moves + randomIndex);
+            free(moves);
+            //printf("move\n");
+            updateBoardBit(move);
+            uint16_t updatedTraps = updateTraps();
+            //printBoard();
+            goldWon = makeRandomMove(isGold, movesLeft-1);
+
+            undoTraps(updatedTraps);
+            undoMove(move);
+        }
+        else if (randomIndex >= numOfMoves && randomIndex < (size - numOfPulls)){
+            //pushes and pulls start at even indexes
+            if ((randomIndex - numOfMoves) % 2 == 1)
+                randomIndex--;
+
+            uint16_t move = *(moves + randomIndex);
+            uint16_t move2 = *(moves + randomIndex + 1);
+            free(moves);
+            //printf("push\n");
+            updateBoardBit(move);
+            uint16_t updatedTraps = updateTraps();
+            updateBoardBit(move2);
+            uint16_t updatedTraps2 = updateTraps();
+            //printBoard();
+            goldWon = makeRandomMove(isGold, movesLeft-2);
+
+            undoTraps(updatedTraps2);
+            undoMove(move2);
+            undoTraps(updatedTraps);
+            undoMove(move);
+        }
+        else if (randomIndex >= (numOfMoves + numOfPushes) && randomIndex < size){
+            if ((randomIndex - numOfMoves) % 2 == 1)
+                randomIndex--;
+
+            uint16_t move = *(moves + randomIndex);
+            uint16_t move2 = *(moves + randomIndex + 1);
+            free(moves);
+            //printf("pull\n");
+            updateBoardBit(move);
+            uint16_t updatedTraps = updateTraps();
+            updateBoardBit(move2);
+            uint16_t updatedTraps2 = updateTraps();
+            //printBoard();
+            goldWon = makeRandomMove(isGold, movesLeft-2);
+
+            undoTraps(updatedTraps2);
+            undoMove(move2);
+            undoTraps(updatedTraps);
+            undoMove(move);
+        }
+        //printf("recuring\n");
+        return goldWon;
+    }
+    //printf("recuring from leaf\n");
+    return goldWin(isGold);
+}
+
+bool playRandomGame(bool isGold, uint16_t *move){
+    bool goldWon;
+    uint16_t updatedTraps[4];
+    for (int i = 0; i < 4; i++){
+        updateBoardBit(*(move + i));
+        updatedTraps[i] = updateTraps();
+    }
+    //printf("\tplaying game\n");//printBoard();
+    goldWon = makeRandomMove(!isGold, 4);
+    //printf("\tgame played\n");//printBoard();
+    for (int i = 0; i < 4; i++){
+        undoTraps(updatedTraps[3 - i]);
+        undoMove(*(move + (3 - i)));
+    }
+    
+    return goldWon;
+}
+
+
+int monteCarloTS(bool isGold, double tTime){
+    srand((unsigned) time(NULL));
+    struct Hash *branches = branchHash(isGold);
+    uint16_t **moves = malloc(branches->numOfElements * sizeof(uint16_t*));
+    int *gamesWon = calloc(branches->numOfElements, sizeof(int));
+    int j = 0;
+    for (int i = 0; i < branches->size; i++){
+        struct Entry *p = *(branches->entries + i);
+        while(p != NULL){
+            *(moves + j) = calloc(4, sizeof(uint16_t));
+            for (int k = 0; k < 4; k++){
+                *(*(moves + j) + k) = *(p->move + k);
+            }
+            j++;
+            p = p->next;
+        }
+    }
+    //printf("moves copied\n");
+    int numOfElements = branches->numOfElements;
+    destroyHash(branches);
+    int maxGamesWon = 0;
+    int maxGamesWonIndex = 0;
+    printf("000");
+    for (int i = 0; i < numOfElements; i++){
+        //printf("move: %d\n", i);
+        for (int j = 0; j < 3; j++){
+            //printf("\tgame: %d\n", j);
+            //printBoard();
+            bool goldWon = playRandomGame(isGold, *(moves + i));
+            if(goldWon == isGold){
+                (*(gamesWon + i))++;
+                if(*(gamesWon + i) > maxGamesWon){
+                    maxGamesWon = *(gamesWon + i);
+                    maxGamesWonIndex = i;
+                }
+            }
+        }
+        printf("\b\b\b%03.0f", (double)i/(double)numOfElements*100);
+    }
+    printf("\b\b\b");
+    for(int i = 0; i < 4; i++){
+        updateBoardBit(*(*(moves + maxGamesWonIndex) + i));
+        updateTraps();
+        printMove(*(*(moves + maxGamesWonIndex) + i));
+    }
+    printf("\n");
+    for(int i = 0; i < numOfElements; i++)
+        free(*(moves + i));
+    free(moves);
+    free(gamesWon);
+    return 0;
+}
+//----------------------------------------------------------------------------*/
 
 

@@ -52,6 +52,10 @@ int insertEntry(uint16_t *move, struct Hash *hash){
     struct Entry *p = *(hash->entries + index);
     if (p == NULL){
         p = calloc(1, sizeof(struct Entry));
+        if (p == NULL){
+            printf("calloc failed.\n");
+            exit(1);
+        }
         for (int i =0 ; i < 6; i++){
             *(p->gold + i) = ARIMAABOARD.gold[i];
             *(p->silver + i) = ARIMAABOARD.silver[i];
@@ -77,7 +81,24 @@ int insertEntry(uint16_t *move, struct Hash *hash){
                     return 1;//checks to see if the board is already in the hash
             p = p->next;
         }
+        if (p->gold[0] == ARIMAABOARD.gold[0] &&
+            p->gold[1] == ARIMAABOARD.gold[1] &&
+            p->gold[2] == ARIMAABOARD.gold[2] &&
+            p->gold[3] == ARIMAABOARD.gold[3] &&
+            p->gold[4] == ARIMAABOARD.gold[4] &&
+            p->gold[5] == ARIMAABOARD.gold[5] &&
+            p->silver[0] == ARIMAABOARD.silver[0] &&
+            p->silver[1] == ARIMAABOARD.silver[1] &&
+            p->silver[2] == ARIMAABOARD.silver[2] &&
+            p->silver[3] == ARIMAABOARD.silver[3] &&
+            p->silver[4] == ARIMAABOARD.silver[4] &&
+            p->silver[5] == ARIMAABOARD.silver[5])
+                return 1;
         p->next = calloc(1, sizeof(struct Entry));
+        if (p->next == NULL){
+            printf("calloc failed.\n");
+            exit(1);
+        }
         p = p->next;
         for (int i = 0; i < 6; i++){
             p->gold[i] = ARIMAABOARD.gold[i];

@@ -68,6 +68,9 @@ uint64_t *generateMoveBitboards(bool isGold);
 int printBitboard(uint64_t bitboard);
 int printMove(uint16_t move);
 bool gameOver(bool isGold);
+int heuristic(bool isGold);
 int negaMaxSearch(bool isGold, double tTime);
+int monteCarloTS(bool isGold, double tTime);
+bool playRandomGame(bool isGold, uint16_t *move);
 struct Hash *branchHash(bool isGold);
 #endif
