@@ -2050,11 +2050,11 @@ bool goldWin(bool isGold){
     return false;
 }
 
-bool makeRandomMove(bool isGold, int movesLeft){
+bool makeRandomMoves(bool isGold, int movesLeft){
     bool goldWon;
     if (!gameOver(isGold)){
         if (movesLeft == 0){
-            goldWon = makeRandomMove(!isGold, 4);
+            goldWon = makeRandomMoves(!isGold, 4);
             //printf("switch\n");
             return goldWon;
         }
@@ -2095,7 +2095,7 @@ bool makeRandomMove(bool isGold, int movesLeft){
             updateBoardBit(move);
             uint16_t updatedTraps = updateTraps();
             //printBoard();
-            goldWon = makeRandomMove(isGold, movesLeft-1);
+            goldWon = makeRandomMoves(isGold, movesLeft-1);
 
             undoTraps(updatedTraps);
             undoMove(move);
@@ -2114,7 +2114,7 @@ bool makeRandomMove(bool isGold, int movesLeft){
             updateBoardBit(move2);
             uint16_t updatedTraps2 = updateTraps();
             //printBoard();
-            goldWon = makeRandomMove(isGold, movesLeft-2);
+            goldWon = makeRandomMoves(isGold, movesLeft-2);
 
             undoTraps(updatedTraps2);
             undoMove(move2);
@@ -2134,7 +2134,7 @@ bool makeRandomMove(bool isGold, int movesLeft){
             updateBoardBit(move2);
             uint16_t updatedTraps2 = updateTraps();
             //printBoard();
-            goldWon = makeRandomMove(isGold, movesLeft-2);
+            goldWon = makeRandomMoves(isGold, movesLeft-2);
 
             undoTraps(updatedTraps2);
             undoMove(move2);
@@ -2147,24 +2147,6 @@ bool makeRandomMove(bool isGold, int movesLeft){
     //printf("recuring from leaf\n");
     return goldWin(isGold);
 }
-
-bool playRandomGame(bool isGold, uint16_t *move){
-    bool goldWon;
-    uint16_t updatedTraps[4];
-    for (int i = 0; i < 4; i++){
-        updateBoardBit(*(move + i));
-        updatedTraps[i] = updateTraps();
-    }
-    //printf("\tplaying game\n");//printBoard();
-    goldWon = makeRandomMove(!isGold, 4);
-    //printf("\tgame played\n");//printBoard();
-    for (int i = 0; i < 4; i++){
-        undoTraps(updatedTraps[3 - i]);
-        undoMove(*(move + (3 - i)));
-    }
-    return goldWon;
-}
-
 
 int monteCarloTS(bool isGold, double tTime){
     srand((unsigned) time(NULL));
@@ -2191,10 +2173,31 @@ int monteCarloTS(bool isGold, double tTime){
     printf("000");
     for (int i = 0; i < numOfElements; i++){
         //printf("move: %d\n", i);
-        for (int j = 0; j < 10; j++){
+        for (int game = 0; game < 10; game++){
             //printf("\tgame: %d\n", j);
             //printBoard();
-            bool goldWon = playRandomGame(isGold, *(moves + i));
+            uint16_t updatedTraps[4];
+            for (int j = 0; j < 4; j++){
+                updateBoardBit(*(*(moves + i) + j));
+                updatedTraps[j] = updateTraps();
+            }
+            if (gameOver(isGold) && (goldWin(isGold) == isGold)){
+                printf("\b\b\b");
+                printf("the game is mine ");
+                for (int j = 0; j < 4; j++)
+                    printMove(*(*(moves + i) + j));
+                printf("\n");
+                for(int i = 0; i < numOfElements; i++)
+                    free(*(moves + i));
+                free(moves);
+                free(gamesWon);
+                return 0;
+            }
+            bool goldWon = makeRandomMoves(!isGold, 4);
+            for (int j = 0; j < 4; j++){
+                undoTraps(updatedTraps[3 - j]);
+                undoMove(*(*(moves + i)+ (3 - j)));
+            }
             if(goldWon == isGold){
                 (*(gamesWon + i))++;
                 if(*(gamesWon + i) > maxGamesWon){
