@@ -5,6 +5,12 @@ struct Board ARIMAABOARD = {
     .gold = {0L, 0L, 0L, 0L, 0L, 0L},
     .silver = {0L, 0L, 0L, 0L, 0L, 0L},
     .empty = ~0L,
+
+    .goldRabbitArray = 0L,
+    .goldOtherAnimalArray = 0L,
+    .silverRabbitArray = 0L,
+    .silverOtherAnimalArray = 0L,
+
     .weights = {1, 2, 3, 5, 9, 13}, //weights borrowed from bomb.
     .gMaterial = 50,
     .sMaterial = 50,
@@ -19,7 +25,17 @@ int makeBoard(char *filepath){
             ARIMAABOARD.gold[i] = 0L;
             ARIMAABOARD.silver[i] = 0L;
         }
-        ARIMAABOARD.empty = ~0L; 
+        ARIMAABOARD.empty = ~0L;
+
+        ARIMAABOARD.goldRabbitArray = 0L;
+        ARIMAABOARD.goldOtherAnimalArray = 0L;
+        ARIMAABOARD.silverRabbitArray = 0L;
+        ARIMAABOARD.silverOtherAnimalArray = 0L;
+
+        ARIMAABOARD.gMaterial = 50;
+        ARIMAABOARD.sMaterial = 50;
+        ARIMAABOARD.gWave = 0;
+        ARIMAABOARD.sWave = 0;
     }
     else{
         //insert building a board form text file
@@ -362,4 +378,114 @@ int updateBoard(char *move){
     return 0;
 }
 
-
+int updateArray(bool isGold, int p, int shift, char direction){
+    if (isGold){
+        if (p == RABBIT){
+            for (int i = 0; i < 8; i++){
+                if (((arrayMask << i) & ARIMAABOARD.goldRabbitArray) == shift << i)
+                    switch (direction){
+                        case 'n':
+                            break;
+                        case 'e':
+                            break;
+                        case 's':
+                            break;
+                        case 'w':
+                            break;
+                    }
+            }
+        }
+        else if (p == CAMMEL || p == ELEPHANT){
+            if (((arrayMask << (p-1)) & ARIMAABOARD.goldOtherAnimalArray) == shift << (p-1))
+                switch (direction){
+                    case 'n':
+                        break;
+                    case 'e':
+                        break;
+                    case 's':
+                        break;
+                    case 'w':
+                        break;
+                }
+        }
+        else{
+            if (((arrayMask << (2 * (p-1))) & ARIMAABOARD.goldOtherAnimalArray) == (shift << (2 * (p-1))))
+                switch (direction){
+                    case 'n':
+                        break;
+                    case 'e':
+                        break;
+                    case 's':
+                        break;
+                    case 'w':
+                        break;
+                }
+            else
+                switch (direction){
+                    case 'n':
+                        break;
+                    case 'e':
+                        break;
+                    case 's':
+                        break;
+                    case 'w':
+                        break;
+                }
+        }
+    }
+    else{
+        if (p == RABBIT){
+            for (int i = 0; i < 8; i++){
+                if (((arrayMask << i) & ARIMAABOARD.silverRabbitArray) == shift << i)
+                    switch (direction){
+                        case 'n':
+                            break;
+                        case 'e':
+                            break;
+                        case 's':
+                            break;
+                        case 'w':
+                            break;
+                    }
+            }
+        }
+        else if (p == CAMMEL || p == ELEPHANT){
+            if (((arrayMask << (p-1)) & ARIMAABOARD.silverOtherAnimalArray) == shift << (p-1))
+                switch (direction){
+                    case 'n':
+                        break;
+                    case 'e':
+                        break;
+                    case 's':
+                        break;
+                    case 'w':
+                        break;
+                }
+        }
+        else{
+            if (((arrayMask << (2 * (p-1))) & ARIMAABOARD.silverOtherAnimalArray) == (shift << (2 * (p-1))))
+                switch (direction){
+                    case 'n':
+                        break;
+                    case 'e':
+                        break;
+                    case 's':
+                        break;
+                    case 'w':
+                        break;
+                }
+            else
+                switch (direction){
+                    case 'n':
+                        break;
+                    case 'e':
+                        break;
+                    case 's':
+                        break;
+                    case 'w':
+                        break;
+                }
+        }
+    }
+    return 0;
+}

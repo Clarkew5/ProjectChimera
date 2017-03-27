@@ -2162,7 +2162,6 @@ bool playRandomGame(bool isGold, uint16_t *move){
         undoTraps(updatedTraps[3 - i]);
         undoMove(*(move + (3 - i)));
     }
-    
     return goldWon;
 }
 
@@ -2192,7 +2191,7 @@ int monteCarloTS(bool isGold, double tTime){
     printf("000");
     for (int i = 0; i < numOfElements; i++){
         //printf("move: %d\n", i);
-        for (int j = 0; j < 3; j++){
+        for (int j = 0; j < 10; j++){
             //printf("\tgame: %d\n", j);
             //printBoard();
             bool goldWon = playRandomGame(isGold, *(moves + i));
