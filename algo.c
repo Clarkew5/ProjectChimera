@@ -1985,7 +1985,7 @@ int negaMaxSearch(bool isGold, double tTime){
     uint16_t *maxMoves = calloc(4, sizeof(uint16_t));
     struct Hash *branches = branchHash(isGold);//makes all the moves
     int numOfElementsChecked = 0;
-    printf("000");
+    printf(" 00");
     for (int depth = 3; depth < 4; depth += 2){
         for (int i = 0; i < branches->size; i++){ 
             struct Entry *p = *(branches->entries + i);
