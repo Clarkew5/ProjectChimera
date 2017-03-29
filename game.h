@@ -29,7 +29,7 @@
 #define MTRAPPED 0b0000000000001011
 #define ETRAPPED 0b0000000000001100
 
-#define arrayMask 63L
+#define arrayMask 0b0000000001111111
 
 struct Board{
     uint64_t gold[6];

@@ -382,28 +382,36 @@ int setupArray(bool isGold, int p, int shift){
     if (isGold){
         if (p == RABBIT){
             int i = 0;
-            while (((arrayMask << (6*i)) & ARIMAABOARD.goldRabbitArray) != 0){
+            while (((arrayMask << (7*i)) & ARIMAABOARD.goldRabbitArray) != 0){
                 i++;
                 if (i >= 8){
                     printf("piece array error\n");
                     exit(1);
                 }
             }
-            ARIMAABOARD.goldRabbitArray |= shift << (6*i);
+            ARIMAABOARD.goldRabbitArray |= shift << (7*i);
         }
-        else if (p == CAMMEL || p == ELEPHANT){
-            if (((arrayMask << (12*p)) & ARIMAABOARD.goldOtherAnimalArray) != 0)
-                ARIMAABOARD.goldRabbitArray |= shift << (12*p);
+        else if (p == CAMMEL){
+            if (((arrayMask << ()) & ARIMAABOARD.goldOtherAnimalArray) != 0)
+                ARIMAABOARD.goldRabbitArray |= shift << ();
+            else{
+                    printf("piece array error\n");
+                    exit(1);
+            }
+        }
+        else if (p == ELEPHANT){
+            if (((arrayMask << ()) & ARIMAABOARD.goldOtherAnimalArray) != 0)
+                ARIMAABOARD.goldRabbitArray |= shift << ();
             else{
                     printf("piece array error\n");
                     exit(1);
             }
         }
         else{
-            if ((((arrayMask << (12*p)) & ARIMAABOARD.goldOtherAnimalArray) != 0))
-                ARIMAABOARD.goldOtherAnimalArray |= shift << (12*p);
-            else if ((((arrayMask << (12*p + 1)) & ARIMAABOARD.goldOtherAnimalArray) != 0))
-                ARIMAABOARD.goldOtherAnimalArray |= shift << (12*p + 1);
+            if ((((arrayMask << (14*(p-1))) & ARIMAABOARD.goldOtherAnimalArray) != 0))
+                ARIMAABOARD.goldOtherAnimalArray |= shift << (14*p);
+            else if ((((arrayMask << (14*(p-1) + 7)) & ARIMAABOARD.goldOtherAnimalArray) != 0))
+                ARIMAABOARD.goldOtherAnimalArray |= shift << (14*(p-1) + 7);
             else{
                     printf("piece array error\n");
                     exit(1);
@@ -413,28 +421,36 @@ int setupArray(bool isGold, int p, int shift){
     else{
         if (p == RABBIT){
             int i = 0;
-            while (((arrayMask << (6*i)) & ARIMAABOARD.silverRabbitArray) != 0){
+            while (((arrayMask << (7*i)) & ARIMAABOARD.silverRabbitArray) != 0){
                 i++;
                 if (i >= 8){
                     printf("piece array error\n");
                     exit(1);
                 }
             }
-            ARIMAABOARD.silverRabbitArray |= shift << (6*i);
+            ARIMAABOARD.silverRabbitArray |= shift << (7*i);
         }
-        else if (p == CAMMEL || p == ELEPHANT){
-            if (((arrayMask << (12*p)) & ARIMAABOARD.silverOtherAnimalArray) != 0)
-                ARIMAABOARD.silverRabbitArray |= shift << (12*p);
+        else if (p == CAMMEL){
+            if (((arrayMask << ()) & ARIMAABOARD.silverOtherAnimalArray) != 0)
+                ARIMAABOARD.silverRabbitArray |= shift << ();
+            else{
+                    printf("piece array error\n");
+                    exit(1);
+            }
+        }
+        else if (p == ELEPHANT){
+            if (((arrayMask << ()) & ARIMAABOARD.silverOtherAnimalArray) != 0)
+                ARIMAABOARD.silverRabbitArray |= shift << ();
             else{
                     printf("piece array error\n");
                     exit(1);
             }
         }
         else{
-            if ((((arrayMask << (12*p)) & ARIMAABOARD.silverOtherAnimalArray) != 0))
-                ARIMAABOARD.silverOtherAnimalArray |= shift << (12*p);
-            else if ((((arrayMask << (12*p + 1)) & ARIMAABOARD.silverOtherAnimalArray) != 0))
-                ARIMAABOARD.silverOtherAnimalArray |= shift << (12*p + 1);
+            if ((((arrayMask << (14*p)) & ARIMAABOARD.silverOtherAnimalArray) != 0))
+                ARIMAABOARD.silverOtherAnimalArray |= shift << (14*p);
+            else if ((((arrayMask << (14*p + 7)) & ARIMAABOARD.silverOtherAnimalArray) != 0))
+                ARIMAABOARD.silverOtherAnimalArray |= shift << (14*p + 7);
             else{
                     printf("piece array error\n");
                     exit(1);
@@ -448,51 +464,68 @@ int updateArray(bool isGold, int p, int shift, char direction){
     if (isGold){
         if (p == RABBIT){
             for (int i = 0; i < 8; i++){
-                if (((arrayMask << (6*i)) & ARIMAABOARD.goldRabbitArray) == shift << (6*i))
+                if (((arrayMask << (7*i)) & ARIMAABOARD.goldRabbitArray) == shift << (7*i))
                     switch (direction){
                         case 'n':
-                            ARIMAABOARD.goldRabbitArray += (8 << 6*i);
+                            ARIMAABOARD.goldRabbitArray += (8 << 7*i);
                             break;
                         case 'e':
-                            ARIMAABOARD.goldRabbitArray -= (1 << 6*i);
+                            ARIMAABOARD.goldRabbitArray -= (1 << 7*i);
                             break;
                         case 's':
-                            ARIMAABOARD.goldRabbitArray -= (8 << 6*i);
+                            ARIMAABOARD.goldRabbitArray -= (8 << 7*i);
                             break;
                         case 'w':
-                            ARIMAABOARD.goldRabbitArray += (1 << 6*i);
+                            ARIMAABOARD.goldRabbitArray += (1 << 7*i);
                             break;
                     }
             }
         }
-        else if (p == CAMMEL || p == ELEPHANT){
+        else if (p == CAMMEL){
             if (((arrayMask << (p-1)) & ARIMAABOARD.goldOtherAnimalArray) == shift << (p-1))
                 switch (direction){
                     case 'n':
-                        ARIMAABOARD.goldRabbitArray += (8 << 6*p);
+                        ARIMAABOARD.goldRabbitArray += (8 << 7*(p-1));
                         break;
                     case 'e':
-                        ARIMAABOARD.goldRabbitArray -= (1 << 6*p);
+                        ARIMAABOARD.goldRabbitArray -= (1 << 7*(p-1));
                         break;
                     case 's':
-                        ARIMAABOARD.goldRabbitArray -= (8 << 6*p);
+                        ARIMAABOARD.goldRabbitArray -= (8 << 7*(p-1));
                         break;
                     case 'w':
-                        ARIMAABOARD.goldRabbitArray += (1 << 6*p);
+                        ARIMAABOARD.goldRabbitArray += (1 << 7*(p-1));
+                        break;
+                }
+        }
+        else if (p == ELEPHANT){
+            if (((arrayMask << (p-1)) & ARIMAABOARD.goldOtherAnimalArray) == shift << (p-1))
+                switch (direction){
+                    case 'n':
+                        ARIMAABOARD.goldRabbitArray += (8 << 7*(p-1));
+                        break;
+                    case 'e':
+                        ARIMAABOARD.goldRabbitArray -= (1 << 7*(p-1));
+                        break;
+                    case 's':
+                        ARIMAABOARD.goldRabbitArray -= (8 << 7*(p-1));
+                        break;
+                    case 'w':
+                        ARIMAABOARD.goldRabbitArray += (1 << 7*(p-1));
                         break;
                 }
         }
         else{
-            if (((arrayMask << (12 * (p-1))) & ARIMAABOARD.goldOtherAnimalArray) == (shift << (12 * (p-1))))
+            if (((arrayMask << (14 * (p-1))) & ARIMAABOARD.goldOtherAnimalArray) == (shift << (14 * (p-1))))
                 switch (direction){
                     case 'n':
-                        ARIMAABOARD.goldOtherAnimalArray += (8 << 6*(p-1));
+                        ARIMAABOARD.goldOtherAnimalArray += (8 << 7*(p-1));
                         break;
                     case 'e':
-                        ARIMAABOARD.goldOtherAnimalArray -= (1 << 6*(p-1));
+                        ARIMAABOARD.goldOtherAnimalArray -= (1 << 7*(p-1));
                         break;
                     case 's':
-                        ARIMAABOARD.goldOtherAnimalArray -= (8 << 6*(p-1));
+                        ARIMAABOARD.goldOtherAnimalArray -= (8 << 7*(p-1));
                         break;
                     case 'w':
                         ARIMAABOARD.goldOtherAnimalArray += (1 << 6*(p-1));
@@ -501,7 +534,7 @@ int updateArray(bool isGold, int p, int shift, char direction){
             else
                 switch (direction){
                     case 'n':
-                        ARIMAABOARD.goldOtherAnimalArray += (8 << 6*p);
+                        ARIMAABOARD.goldOtherAnimalArray += (8 << 7*(p-1));
                         break;
                     case 'e':
                         ARIMAABOARD.goldOtherAnimalArray -= (1 << 6*p);

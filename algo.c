@@ -2055,7 +2055,7 @@ bool makeRandomMoves(bool isGold, int movesLeft){
     if (!gameOver(isGold)){
         if (movesLeft == 0){
             goldWon = makeRandomMoves(!isGold, 4);
-            //printf("switch\n");
+
             return goldWon;
         }
 
@@ -2076,18 +2076,11 @@ bool makeRandomMoves(bool isGold, int movesLeft){
             else
                 return true;
         }
-        //printf("1\n");
-        //for (int i = 0; i < 16; i++){
-            //printf("%d\n-----------\n", i);
-            //printBitboard(*(bitboards + i));
-        //}
         uint16_t *moves = generateMovesFromBoard(bitboards, isGold, movesLeft);
-        //printf("2\n");
         free(bitboards);
 
 
         int randomIndex = (rand() % size);
-        //getchar();
         if (randomIndex >= 0 && randomIndex < numOfMoves){
             uint16_t move = *(moves + randomIndex);
             free(moves);
@@ -2113,7 +2106,7 @@ bool makeRandomMoves(bool isGold, int movesLeft){
             uint16_t updatedTraps = updateTraps();
             updateBoardBit(move2);
             uint16_t updatedTraps2 = updateTraps();
-            //printBoard();
+
             goldWon = makeRandomMoves(isGold, movesLeft-2);
 
             undoTraps(updatedTraps2);
@@ -2128,12 +2121,12 @@ bool makeRandomMoves(bool isGold, int movesLeft){
             uint16_t move = *(moves + randomIndex);
             uint16_t move2 = *(moves + randomIndex + 1);
             free(moves);
-            //printf("pull\n");
+
             updateBoardBit(move);
             uint16_t updatedTraps = updateTraps();
             updateBoardBit(move2);
             uint16_t updatedTraps2 = updateTraps();
-            //printBoard();
+
             goldWon = makeRandomMoves(isGold, movesLeft-2);
 
             undoTraps(updatedTraps2);
@@ -2141,10 +2134,8 @@ bool makeRandomMoves(bool isGold, int movesLeft){
             undoTraps(updatedTraps);
             undoMove(move);
         }
-        //printf("recuring\n");
         return goldWon;
     }
-    //printf("recuring from leaf\n");
     return goldWin(isGold);
 }
 
