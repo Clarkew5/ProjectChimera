@@ -6,11 +6,11 @@ struct Board ARIMAABOARD = {
     .silver = {0L, 0L, 0L, 0L, 0L, 0L},
     .empty = ~0L,
 
-    .goldPositions = {0, 0, 0, 0, 0, 0, 0, 0,
-                      0, 0, 0, 0, 0, 0, 0, 0},
+    .goldPositions = {64, 64, 64, 64, 64, 64, 64, 64,
+                      64, 64, 64, 64, 64, 64, 64, 64},
 
-    .silverPositions = {0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0},
+    .silverPositions = {64, 64, 64, 64, 64, 64, 64, 64,
+                        64, 64, 64, 64, 64, 64, 64, 64},
 
     .weights = {1, 2, 3, 5, 9, 13}, //weights borrowed from bomb.
     .gMaterial = 50,
@@ -29,8 +29,8 @@ int makeBoard(char *filepath){
         ARIMAABOARD.empty = ~0L;
 
         for (int i= 0; i < 16; i++){
-            ARIMAABOARD.goldPositions[i] = 0;
-            ARIMAABOARD.silverPositions[i] = 0;
+            ARIMAABOARD.goldPositions[i] = 64;
+            ARIMAABOARD.silverPositions[i] = 64;
         }
 
         ARIMAABOARD.gMaterial = 50;
@@ -94,7 +94,7 @@ int setupArray(bool isGold, int p, int shift){
         int i = 0;
         switch(p){            
             case RABBIT:
-                while (ARIMAABOARD.goldPositions[i] != 0){
+                while (ARIMAABOARD.goldPositions[i] != 64){
                     i++;
                     if (i >= 8){
                         printf("peice array setup error\n");
@@ -103,9 +103,9 @@ int setupArray(bool isGold, int p, int shift){
                 }
             break;
             case CAT:
-                if (ARIMAABOARD.goldPositions[CAT1_POS] == 0)
+                if (ARIMAABOARD.goldPositions[CAT1_POS] == 64)
                     i = CAT1_POS;
-                else if (ARIMAABOARD.goldPositions[CAT2_POS] == 0)
+                else if (ARIMAABOARD.goldPositions[CAT2_POS] == 64)
                     i = CAT2_POS;
                 else{
                     printf("peice array setup error\n");
@@ -113,9 +113,9 @@ int setupArray(bool isGold, int p, int shift){
                 }
             break;
             case DOG:
-                if (ARIMAABOARD.goldPositions[DOG1_POS] == 0)
+                if (ARIMAABOARD.goldPositions[DOG1_POS] == 64)
                     i = DOG1_POS;
-                else if (ARIMAABOARD.goldPositions[DOG2_POS] == 0)
+                else if (ARIMAABOARD.goldPositions[DOG2_POS] == 64)
                     i = DOG2_POS;
                 else{
                     printf("peice array setup error\n");
@@ -123,9 +123,9 @@ int setupArray(bool isGold, int p, int shift){
                 }
             break;
             case HORSE:
-                if (ARIMAABOARD.goldPositions[HORSE1_POS] == 0)
+                if (ARIMAABOARD.goldPositions[HORSE1_POS] == 64)
                     i = HORSE1_POS;
-                else if (ARIMAABOARD.goldPositions[HORSE2_POS] == 0)
+                else if (ARIMAABOARD.goldPositions[HORSE2_POS] == 64)
                     i = HORSE2_POS;
                 else{
                     printf("peice array setup error\n");
@@ -133,7 +133,7 @@ int setupArray(bool isGold, int p, int shift){
                 }
             break;
             case CAMMEL:
-                if (ARIMAABOARD.goldPositions[CAMMEL_POS] == 0)
+                if (ARIMAABOARD.goldPositions[CAMMEL_POS] == 64)
                     i =CAMMEL_POS;
                 else{
                     printf("peice array setup error\n");
@@ -141,7 +141,7 @@ int setupArray(bool isGold, int p, int shift){
                 }
             break;
             case ELEPHANT:
-                if (ARIMAABOARD.goldPositions[ELEPHANT_POS] == 0)
+                if (ARIMAABOARD.goldPositions[ELEPHANT_POS] == 64)
                     i =ELEPHANT_POS;
                 else{
                     printf("peice array setup error\n");
@@ -156,7 +156,7 @@ int setupArray(bool isGold, int p, int shift){
         switch(p){
             
             case RABBIT:
-                while (ARIMAABOARD.silverPositions[i] != 0){
+                while (ARIMAABOARD.silverPositions[i] != 64){
                     i++;
                     if (i >= 8){
                         printf("peice array setup error\n");
@@ -165,9 +165,9 @@ int setupArray(bool isGold, int p, int shift){
                 }
             break;
             case CAT:
-                if (ARIMAABOARD.silverPositions[CAT1_POS] == 0)
+                if (ARIMAABOARD.silverPositions[CAT1_POS] == 64)
                     i = CAT1_POS;
-                else if (ARIMAABOARD.silverPositions[CAT2_POS] == 0)
+                else if (ARIMAABOARD.silverPositions[CAT2_POS] == 64)
                     i = CAT2_POS;
                 else{
                     printf("peice array setup error\n");
@@ -175,9 +175,9 @@ int setupArray(bool isGold, int p, int shift){
                 }
             break;
             case DOG:
-                if (ARIMAABOARD.silverPositions[DOG1_POS] == 0)
+                if (ARIMAABOARD.silverPositions[DOG1_POS] == 64)
                     i = DOG1_POS;
-                else if (ARIMAABOARD.silverPositions[DOG2_POS] == 0)
+                else if (ARIMAABOARD.silverPositions[DOG2_POS] == 64)
                     i = DOG2_POS;
                 else{
                     printf("peice array setup error\n");
@@ -185,9 +185,9 @@ int setupArray(bool isGold, int p, int shift){
                 }
             break;
             case HORSE:
-                if (ARIMAABOARD.silverPositions[HORSE1_POS] == 0)
+                if (ARIMAABOARD.silverPositions[HORSE1_POS] == 64)
                     i = HORSE1_POS;
-                else if (ARIMAABOARD.silverPositions[HORSE2_POS] == 0)
+                else if (ARIMAABOARD.silverPositions[HORSE2_POS] == 64)
                     i = HORSE2_POS;
                 else{
                     printf("peice array setup error\n");
@@ -195,7 +195,7 @@ int setupArray(bool isGold, int p, int shift){
                 }
             break;
             case CAMMEL:
-                if (ARIMAABOARD.silverPositions[CAMMEL_POS] == 0)
+                if (ARIMAABOARD.silverPositions[CAMMEL_POS] == 64)
                     i =CAMMEL_POS;
                 else{
                     printf("peice array setup error\n");
@@ -203,7 +203,7 @@ int setupArray(bool isGold, int p, int shift){
                 }
             break;
             case ELEPHANT:
-                if (ARIMAABOARD.silverPositions[ELEPHANT_POS] == 0)
+                if (ARIMAABOARD.silverPositions[ELEPHANT_POS] == 64)
                     i =ELEPHANT_POS;
                 else{
                     printf("peice array setup error\n");
