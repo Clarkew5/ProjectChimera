@@ -2,14 +2,15 @@
 
 struct Board ARIMAABOARD = {
     //Initalizes all global variables to their start state
-    .gold = {0L, 0L, 0L, 0L, 0L, 0L},
+    .gold = {0L, 0L, 0L, 0L, },
     .silver = {0L, 0L, 0L, 0L, 0L, 0L},
     .empty = ~0L,
 
-    .goldRabbitArray = 0L,
-    .goldOtherAnimalArray = 0L,
-    .silverRabbitArray = 0L,
-    .silverOtherAnimalArray = 0L,
+    .goldPositions = {0, 0, 0, 0, 0, 0, 0, 0,
+                      0, 0, 0, 0, 0, 0, 0, 0},
+
+    .silverPositions = {0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0},
 
     .weights = {1, 2, 3, 5, 9, 13}, //weights borrowed from bomb.
     .gMaterial = 50,
@@ -27,10 +28,10 @@ int makeBoard(char *filepath){
         }
         ARIMAABOARD.empty = ~0L;
 
-        ARIMAABOARD.goldRabbitArray = 0L;
-        ARIMAABOARD.goldOtherAnimalArray = 0L;
-        ARIMAABOARD.silverRabbitArray = 0L;
-        ARIMAABOARD.silverOtherAnimalArray = 0L;
+        for (int i= 0; i < 16; i++){
+            ARIMAABOARD.goldPositions[i] = 0;
+            ARIMAABOARD.silverPositions[i] = 0;
+        }
 
         ARIMAABOARD.gMaterial = 50;
         ARIMAABOARD.sMaterial = 50;
@@ -86,6 +87,286 @@ int printBoard(){
     }
     printf(" +-----------------+\n   a b c d e f g h\n");
 	return 0;
+}
+
+int setupArray(bool isGold, int p, int shift){
+    if (isGold){
+        int i = 0;
+        switch(p){            
+            case RABBIT:
+                while (ARIMAABOARD.goldPositions[i] != 0){
+                    i++;
+                    if (i >= 8){
+                        printf("peice array setup error\n");
+                        exit(1);
+                    }
+                }
+            break;
+            case CAT:
+                if (ARIMAABOARD.goldPositions[CAT1_POS] == 0)
+                    i = CAT1_POS;
+                else if (ARIMAABOARD.goldPositions[CAT2_POS] == 0)
+                    i = CAT2_POS;
+                else{
+                    printf("peice array setup error\n");
+                    exit(1);
+                }
+            break;
+            case DOG:
+                if (ARIMAABOARD.goldPositions[DOG1_POS] == 0)
+                    i = DOG1_POS;
+                else if (ARIMAABOARD.goldPositions[DOG2_POS] == 0)
+                    i = DOG2_POS;
+                else{
+                    printf("peice array setup error\n");
+                    exit(1);
+                }
+            break;
+            case HORSE:
+                if (ARIMAABOARD.goldPositions[HORSE1_POS] == 0)
+                    i = HORSE1_POS;
+                else if (ARIMAABOARD.goldPositions[HORSE2_POS] == 0)
+                    i = HORSE2_POS;
+                else{
+                    printf("peice array setup error\n");
+                    exit(1);
+                }
+            break;
+            case CAMMEL:
+                if (ARIMAABOARD.goldPositions[CAMMEL_POS] == 0)
+                    i =CAMMEL_POS;
+                else{
+                    printf("peice array setup error\n");
+                    exit(1);
+                }
+            break;
+            case ELEPHANT:
+                if (ARIMAABOARD.goldPositions[ELEPHANT_POS] == 0)
+                    i =ELEPHANT_POS;
+                else{
+                    printf("peice array setup error\n");
+                    exit(1);
+                }
+            break;
+        }
+        ARIMAABOARD.goldPositions[i] = shift;
+    }
+    else{
+        int i = 0;
+        switch(p){
+            
+            case RABBIT:
+                while (ARIMAABOARD.silverPositions[i] != 0){
+                    i++;
+                    if (i >= 8){
+                        printf("peice array setup error\n");
+                        exit(1);
+                    }
+                }
+            break;
+            case CAT:
+                if (ARIMAABOARD.silverPositions[CAT1_POS] == 0)
+                    i = CAT1_POS;
+                else if (ARIMAABOARD.silverPositions[CAT2_POS] == 0)
+                    i = CAT2_POS;
+                else{
+                    printf("peice array setup error\n");
+                    exit(1);
+                }
+            break;
+            case DOG:
+                if (ARIMAABOARD.silverPositions[DOG1_POS] == 0)
+                    i = DOG1_POS;
+                else if (ARIMAABOARD.silverPositions[DOG2_POS] == 0)
+                    i = DOG2_POS;
+                else{
+                    printf("peice array setup error\n");
+                    exit(1);
+                }
+            break;
+            case HORSE:
+                if (ARIMAABOARD.silverPositions[HORSE1_POS] == 0)
+                    i = HORSE1_POS;
+                else if (ARIMAABOARD.silverPositions[HORSE2_POS] == 0)
+                    i = HORSE2_POS;
+                else{
+                    printf("peice array setup error\n");
+                    exit(1);
+                }
+            break;
+            case CAMMEL:
+                if (ARIMAABOARD.silverPositions[CAMMEL_POS] == 0)
+                    i =CAMMEL_POS;
+                else{
+                    printf("peice array setup error\n");
+                    exit(1);
+                }
+            break;
+            case ELEPHANT:
+                if (ARIMAABOARD.silverPositions[ELEPHANT_POS] == 0)
+                    i =ELEPHANT_POS;
+                else{
+                    printf("peice array setup error\n");
+                    exit(1);
+                }
+            break;            
+        }
+        ARIMAABOARD.silverPositions[i] = shift;
+    }
+    return 0;
+}
+
+int updateArray(bool isGold, int p, int shift, char direction){
+    if (isGold){
+        int i = 0;
+        switch(p){
+            case RABBIT:
+                while (ARIMAABOARD.goldPositions[i] != shift){
+                    i++;
+                    if (i >= 8){
+                        printf("peice array update error\n");
+                        exit(1);
+                    }
+                }
+            break;
+            case CAT:
+                if (ARIMAABOARD.goldPositions[CAT1_POS] == shift)
+                    i = CAT1_POS;
+                else if (ARIMAABOARD.goldPositions[CAT2_POS] == shift)
+                    i = CAT2_POS;
+                else{
+                    printf("peice array update error\n");
+                    exit(1);
+                }
+            break;
+            case DOG:
+                if (ARIMAABOARD.goldPositions[DOG1_POS] == shift)
+                    i = DOG1_POS;
+                else if (ARIMAABOARD.goldPositions[DOG2_POS] == shift)
+                    i = DOG2_POS;
+                else{
+                    printf("peice array update error\n");
+                    exit(1);
+                }
+            break;
+            case HORSE:
+                if (ARIMAABOARD.goldPositions[HORSE1_POS] == shift)
+                    i = HORSE1_POS;
+                else if (ARIMAABOARD.goldPositions[HORSE2_POS] == shift)
+                    i = HORSE2_POS;
+                else{
+                    printf("peice array update error\n");
+                    exit(1);
+                }
+            break;
+            case CAMMEL:
+                if (ARIMAABOARD.goldPositions[CAMMEL_POS] == shift)
+                    i =CAMMEL_POS;
+                else{
+                    printf("peice array update error\n");
+                    exit(1);
+                }
+            break;
+            case ELEPHANT:
+                if (ARIMAABOARD.goldPositions[ELEPHANT_POS] == shift)
+                    i =ELEPHANT_POS;
+                else{
+                    printf("peice array update error\n");
+                    exit(1);
+                }
+            break;
+        }
+
+        switch(direction){
+            case 'n':
+                ARIMAABOARD.goldPositions[i] += 8;
+                break;
+            case 'e':
+                ARIMAABOARD.goldPositions[i] -= 1;
+                break;
+            case 's':
+                ARIMAABOARD.goldPositions[i] -= 8;
+                break;
+            case 'w':
+                ARIMAABOARD.goldPositions[i] += 1;
+                break;
+        }
+    }
+    else{
+        int i = 0;
+        switch(p){
+            case RABBIT:
+                while (ARIMAABOARD.silverPositions[i] != shift){
+                    i++;
+                    if (i >= 8){
+                        printf("peice array update error\n");
+                        exit(1);
+                    }
+                }
+            break;
+            case CAT:
+                if (ARIMAABOARD.silverPositions[CAT1_POS] == shift)
+                    i = CAT1_POS;
+                else if (ARIMAABOARD.silverPositions[CAT2_POS] == shift)
+                    i = CAT2_POS;
+                else{
+                    printf("peice array update error\n");
+                    exit(1);
+                }
+            break;
+            case DOG:
+                if (ARIMAABOARD.silverPositions[DOG1_POS] == shift)
+                    i = DOG1_POS;
+                else if (ARIMAABOARD.silverPositions[DOG2_POS] == shift)
+                    i = DOG2_POS;
+                else{
+                    printf("peice array update error\n");
+                    exit(1);
+                }
+            break;
+            case HORSE:
+                if (ARIMAABOARD.silverPositions[HORSE1_POS] == shift)
+                    i = HORSE1_POS;
+                else if (ARIMAABOARD.silverPositions[HORSE2_POS] == shift)
+                    i = HORSE2_POS;
+                else{
+                    printf("peice array update error\n");
+                    exit(1);
+                }
+            break;
+            case CAMMEL:
+                if (ARIMAABOARD.silverPositions[CAMMEL_POS] == shift)
+                    i =CAMMEL_POS;
+                else{
+                    printf("peice array update error\n");
+                    exit(1);
+                }
+            break;
+            case ELEPHANT:
+                if (ARIMAABOARD.silverPositions[ELEPHANT_POS] == shift)
+                    i =ELEPHANT_POS;
+                else{
+                    printf("peice array update error\n");
+                    exit(1);
+                }
+            break;
+        }
+        switch(direction){
+            case 'n':
+                ARIMAABOARD.goldPositions[i] += 8;
+                break;
+            case 'e':
+                ARIMAABOARD.goldPositions[i] -= 1;
+                break;
+            case 's':
+                ARIMAABOARD.goldPositions[i] -= 8;
+                break;
+            case 'w':
+                ARIMAABOARD.goldPositions[i] += 1;
+                break;
+        }
+    }
+    return 0;
 }
 
 uint16_t updateTraps(){
@@ -195,50 +476,62 @@ int updateBoard(char *move){
                 case 'R':
                     ARIMAABOARD.gold[RABBIT] ^= 1L << ((8*j) + i);
                     ARIMAABOARD.empty ^= 1L << ((8*j) + i);
+                    setupArray(true, RABBIT, (8*j) + i);
                     break;
                 case 'r':
                     ARIMAABOARD.silver[RABBIT] ^= 1L << ((8*j) + i);
                     ARIMAABOARD.empty ^= 1L << ((8*j) + i);
+                    setupArray(false, RABBIT, (8*j) + i);
                     break;
                 case 'C':
                     ARIMAABOARD.gold[CAT] ^= 1L << ((8*j) + i);
                     ARIMAABOARD.empty ^= 1L << ((8*j) + i);
+                    setupArray(true, CAT, (8*j) + i);
                     break;
                 case 'c':
                     ARIMAABOARD.silver[CAT] ^= 1L << ((8*j) + i);
                     ARIMAABOARD.empty ^= 1L << ((8*j) + i);
+                    setupArray(false, CAT, (8*j) + i);
                     break;
                 case 'D':
                     ARIMAABOARD.gold[DOG] ^= 1L << ((8*j) + i);
                     ARIMAABOARD.empty ^= 1L << ((8*j) + i);
+                    setupArray(true, DOG, (8*j) + i);
                     break;
                 case 'd':
                     ARIMAABOARD.silver[DOG] ^= 1L << ((8*j) + i);
                     ARIMAABOARD.empty ^= 1L << ((8*j) + i);
+                    setupArray(false, DOG, (8*j) + i);
                     break;
                 case 'H':
                     ARIMAABOARD.gold[HORSE] ^= 1L << ((8*j) + i);
                     ARIMAABOARD.empty ^= 1L << ((8*j) + i);
+                    setupArray(true, HORSE, (8*j) + i);
                     break;
                 case 'h':
                     ARIMAABOARD.silver[HORSE] ^= 1L << ((8*j) + i);
                     ARIMAABOARD.empty ^= 1L << ((8*j) + i);
+                    setupArray(false, HORSE, (8*j) + i);
                     break;
                 case 'M':
                     ARIMAABOARD.gold[CAMMEL] ^= 1L << ((8*j) + i);
                     ARIMAABOARD.empty ^= 1L << ((8*j) + i);
+                    setupArray(true, CAMMEL, (8*j) + i);
                     break;
                 case 'm':
                     ARIMAABOARD.silver[CAMMEL] ^= 1L << ((8*j) + i);
                     ARIMAABOARD.empty ^= 1L << ((8*j) + i);
+                    setupArray(false, CAMMEL, (8*j) + i);
                     break;
                 case 'E':
                     ARIMAABOARD.gold[ELEPHANT] ^= 1L << ((8*j) + i);
                     ARIMAABOARD.empty ^= 1L << ((8*j) + i);
+                    setupArray(true, ELEPHANT, (8*j) + i);
                     break;
                 case 'e':
                     ARIMAABOARD.silver[ELEPHANT] ^= 1L << ((8*j) + i);
                     ARIMAABOARD.empty ^= 1L << ((8*j) + i);
+                    setupArray(false, ELEPHANT, (8*j) + i);
                     break;
                 default:
                     printf("error no such piece\n");
@@ -378,212 +671,34 @@ int updateBoard(char *move){
     return 0;
 }
 
-int setupArray(bool isGold, int p, int shift){
-    if (isGold){
-        if (p == RABBIT){
-            int i = 0;
-            while (((arrayMask << (6*i)) & ARIMAABOARD.goldRabbitArray) != 0){
-                i++;
-                if (i >= 8){
-                    printf("piece array error\n");
-                    exit(1);
-                }
-            }
-            ARIMAABOARD.goldRabbitArray |= shift << (6*i);
-        }
-        else if (p == CAMMEL || p == ELEPHANT){
-            if (((arrayMask << (12*p)) & ARIMAABOARD.goldOtherAnimalArray) != 0)
-                ARIMAABOARD.goldRabbitArray |= shift << (12*p);
-            else{
-                    printf("piece array error\n");
-                    exit(1);
-            }
-        }
-        else{
-            if ((((arrayMask << (12*p)) & ARIMAABOARD.goldOtherAnimalArray) != 0))
-                ARIMAABOARD.goldOtherAnimalArray |= shift << (12*p);
-            else if ((((arrayMask << (12*p + 1)) & ARIMAABOARD.goldOtherAnimalArray) != 0))
-                ARIMAABOARD.goldOtherAnimalArray |= shift << (12*p + 1);
-            else{
-                    printf("piece array error\n");
-                    exit(1);
-            }
-        }
+int printPrieceArray(){
+    for (int i = 0; i < 8; i++){
+        printf("R%d:%d ", i+1, ARIMAABOARD.goldPositions[i]);
     }
-    else{
-        if (p == RABBIT){
-            int i = 0;
-            while (((arrayMask << (6*i)) & ARIMAABOARD.silverRabbitArray) != 0){
-                i++;
-                if (i >= 8){
-                    printf("piece array error\n");
-                    exit(1);
-                }
-            }
-            ARIMAABOARD.silverRabbitArray |= shift << (6*i);
-        }
-        else if (p == CAMMEL || p == ELEPHANT){
-            if (((arrayMask << (12*p)) & ARIMAABOARD.silverOtherAnimalArray) != 0)
-                ARIMAABOARD.silverRabbitArray |= shift << (12*p);
-            else{
-                    printf("piece array error\n");
-                    exit(1);
-            }
-        }
-        else{
-            if ((((arrayMask << (12*p)) & ARIMAABOARD.silverOtherAnimalArray) != 0))
-                ARIMAABOARD.silverOtherAnimalArray |= shift << (12*p);
-            else if ((((arrayMask << (12*p + 1)) & ARIMAABOARD.silverOtherAnimalArray) != 0))
-                ARIMAABOARD.silverOtherAnimalArray |= shift << (12*p + 1);
-            else{
-                    printf("piece array error\n");
-                    exit(1);
-            }
-        }
-    }
-    return 0;
-}
+    printf("\n");
+    printf("C1:%d ", ARIMAABOARD.goldPositions[CAT1_POS]);
+    printf("C2:%d ", ARIMAABOARD.goldPositions[CAT2_POS]);
+    printf("D1:%d ", ARIMAABOARD.goldPositions[DOG1_POS]);
+    printf("D2:%d ", ARIMAABOARD.goldPositions[DOG2_POS]);
+    printf("H1:%d ", ARIMAABOARD.goldPositions[HORSE1_POS]);
+    printf("H2:%d ", ARIMAABOARD.goldPositions[HORSE2_POS]);
+    printf("C:%d ", ARIMAABOARD.goldPositions[CAMMEL_POS]);
+    printf("E:%d\n", ARIMAABOARD.goldPositions[ELEPHANT_POS]);
 
-int updateArray(bool isGold, int p, int shift, char direction){
-    if (isGold){
-        if (p == RABBIT){
-            for (int i = 0; i < 8; i++){
-                if (((arrayMask << (6*i)) & ARIMAABOARD.goldRabbitArray) == shift << (6*i))
-                    switch (direction){
-                        case 'n':
-                            ARIMAABOARD.goldRabbitArray += (8 << 6*i);
-                            break;
-                        case 'e':
-                            ARIMAABOARD.goldRabbitArray -= (1 << 6*i);
-                            break;
-                        case 's':
-                            ARIMAABOARD.goldRabbitArray -= (8 << 6*i);
-                            break;
-                        case 'w':
-                            ARIMAABOARD.goldRabbitArray += (1 << 6*i);
-                            break;
-                    }
-            }
-        }
-        else if (p == CAMMEL || p == ELEPHANT){
-            if (((arrayMask << (p-1)) & ARIMAABOARD.goldOtherAnimalArray) == shift << (p-1))
-                switch (direction){
-                    case 'n':
-                        ARIMAABOARD.goldRabbitArray += (8 << 6*p);
-                        break;
-                    case 'e':
-                        ARIMAABOARD.goldRabbitArray -= (1 << 6*p);
-                        break;
-                    case 's':
-                        ARIMAABOARD.goldRabbitArray -= (8 << 6*p);
-                        break;
-                    case 'w':
-                        ARIMAABOARD.goldRabbitArray += (1 << 6*p);
-                        break;
-                }
-        }
-        else{
-            if (((arrayMask << (12 * (p-1))) & ARIMAABOARD.goldOtherAnimalArray) == (shift << (12 * (p-1))))
-                switch (direction){
-                    case 'n':
-                        ARIMAABOARD.goldOtherAnimalArray += (8 << 6*(p-1));
-                        break;
-                    case 'e':
-                        ARIMAABOARD.goldOtherAnimalArray -= (1 << 6*(p-1));
-                        break;
-                    case 's':
-                        ARIMAABOARD.goldOtherAnimalArray -= (8 << 6*(p-1));
-                        break;
-                    case 'w':
-                        ARIMAABOARD.goldOtherAnimalArray += (1 << 6*(p-1));
-                        break;
-                }
-            else
-                switch (direction){
-                    case 'n':
-                        ARIMAABOARD.goldOtherAnimalArray += (8 << 6*p);
-                        break;
-                    case 'e':
-                        ARIMAABOARD.goldOtherAnimalArray -= (1 << 6*p);
-                        break;
-                    case 's':
-                        ARIMAABOARD.goldOtherAnimalArray -= (8 << 6*p);
-                        break;
-                    case 'w':
-                        ARIMAABOARD.goldOtherAnimalArray += (1 << 6*p);
-                        break;
-                }
-        }
+    printf("\n");
+
+    for (int i = 0; i < 8; i++){
+        printf("r%d:%d ", i+1, ARIMAABOARD.silverPositions[i]);
     }
-    else{
-        if (p == RABBIT){
-            for (int i = 0; i < 8; i++){
-                if (((arrayMask << 6*i) & ARIMAABOARD.silverRabbitArray) == shift << 6*i)
-                    switch (direction){
-                        case 'n':
-                            ARIMAABOARD.silverRabbitArray += (8 << 6*i);
-                            break;
-                        case 'e':
-                            ARIMAABOARD.silverRabbitArray -= (1 << 6*i);
-                            break;
-                        case 's':
-                            ARIMAABOARD.silverRabbitArray -= (8 << 6*i);
-                            break;
-                        case 'w':
-                            ARIMAABOARD.goldRabbitArray += (1 << 6*i);
-                            break;
-                    }
-            }
-        }
-        else if (p == CAMMEL || p == ELEPHANT){
-            if (((arrayMask << (p-1)) & ARIMAABOARD.silverOtherAnimalArray) == shift << (p-1))
-                switch (direction){
-                    case 'n':
-                        ARIMAABOARD.goldRabbitArray += (8 << 6*(p-1));
-                        break;
-                    case 'e':
-                        ARIMAABOARD.goldRabbitArray -= (1 << 6*(p-1));
-                        break;
-                    case 's':
-                        ARIMAABOARD.goldRabbitArray -= (8 << 6*(p-1));
-                        break;
-                    case 'w':
-                        ARIMAABOARD.goldRabbitArray += (1 << 6*(p-1));
-                        break;
-                }
-        }
-        else{
-            if (((arrayMask << (12 * (p-1))) & ARIMAABOARD.silverOtherAnimalArray) == (shift << (12 * (p-1))))
-                switch (direction){
-                    case 'n':
-                        ARIMAABOARD.silverOtherAnimalArray += (8 << 6*(p-1));
-                        break;
-                    case 'e':
-                        ARIMAABOARD.silverOtherAnimalArray -= (1 << 6*(p-1));
-                        break;
-                    case 's':
-                        ARIMAABOARD.silverOtherAnimalArray -= (8 << 6*(p-1));
-                        break;
-                    case 'w':
-                        ARIMAABOARD.silverOtherAnimalArray += (1 << 6*(p-1));
-                        break;
-                }
-            else
-                switch (direction){
-                    case 'n':
-                        ARIMAABOARD.silverOtherAnimalArray += (8 << 6*p);
-                        break;
-                    case 'e':
-                        ARIMAABOARD.silverOtherAnimalArray -= (1 << 6*p);
-                        break;
-                    case 's':
-                        ARIMAABOARD.silverOtherAnimalArray -= (8 << 6*p);
-                        break;
-                    case 'w':
-                        ARIMAABOARD.silverOtherAnimalArray += (1 << 6*p);
-                        break;
-                }
-        }
-    }
+    printf("\n");
+    printf("c1:%d ", ARIMAABOARD.silverPositions[CAT1_POS]);
+    printf("c2:%d ", ARIMAABOARD.silverPositions[CAT2_POS]);
+    printf("d1:%d ", ARIMAABOARD.silverPositions[DOG1_POS]);
+    printf("d2:%d ", ARIMAABOARD.silverPositions[DOG2_POS]);
+    printf("h1:%d ", ARIMAABOARD.silverPositions[HORSE1_POS]);
+    printf("h2:%d ", ARIMAABOARD.silverPositions[HORSE2_POS]);
+    printf("c:%d ", ARIMAABOARD.silverPositions[CAMMEL_POS]);
+    printf("e:%d\n", ARIMAABOARD.silverPositions[ELEPHANT_POS]);
+
     return 0;
 }
