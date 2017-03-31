@@ -57,8 +57,9 @@ extern struct Board ARIMAABOARD;
 
 int makeBoard(char *filepath);
 int printBoard();
-int printPrieceArray();
+int printPieceArray();
 int updateBoard(char *move);
+int setupArray(bool isGold, int p, int shift);
 int updateArray(bool isGold, int p, int shift, char direction);
 uint16_t updateTraps();
 

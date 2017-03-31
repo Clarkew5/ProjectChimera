@@ -23,8 +23,12 @@ int main(int argc, char *argv[]){
 
         //gold        
         printf("%dg: ", turnNumber);
+        
+        //randomAgent(GOLD);
+        //negaMaxSearch(GOLD, 3600);
         monteCarloTS(GOLD, 3600);
-        printBoard();
+        //printBoard();
+        //printPieceArray();
         if (gameOver(GOLD))
             break;
         boardCheck = 0L;
@@ -36,8 +40,9 @@ int main(int argc, char *argv[]){
 
         //silver
         printf("%ds: ", turnNumber);
-        randomAgent(SILVER);        
-        printBoard();
+        randomAgent(SILVER);
+        //printBoard();
+        //printPieceArray();
         if (gameOver(SILVER))
             break;
         boardCheck = 0L;

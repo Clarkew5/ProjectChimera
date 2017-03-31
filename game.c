@@ -224,7 +224,12 @@ int updateArray(bool isGold, int p, int shift, char direction){
                 while (ARIMAABOARD.goldPositions[i] != shift){
                     i++;
                     if (i >= 8){
-                        printf("peice array update error\n");
+                        printf("\npeice array update error:\n");
+                        printf("R: %d %c\n", shift, direction);
+                        printf("-------------------------------------------\n");
+                        printPieceArray();
+                        printBoard();
+                        printf("-------------------------------------------\n");
                         exit(1);
                     }
                 }
@@ -235,7 +240,12 @@ int updateArray(bool isGold, int p, int shift, char direction){
                 else if (ARIMAABOARD.goldPositions[CAT2_POS] == shift)
                     i = CAT2_POS;
                 else{
-                    printf("peice array update error\n");
+                    printf("\npeice array update error:\n");
+                    printf("C: %d %c\n", shift, direction);
+                    printf("-------------------------------------------\n");
+                    printPieceArray();
+                    printBoard();
+                    printf("-------------------------------------------\n");
                     exit(1);
                 }
             break;
@@ -245,7 +255,12 @@ int updateArray(bool isGold, int p, int shift, char direction){
                 else if (ARIMAABOARD.goldPositions[DOG2_POS] == shift)
                     i = DOG2_POS;
                 else{
-                    printf("peice array update error\n");
+                    printf("\npeice array update error:\n");
+                    printf("D: %d %c\n", shift, direction);
+                    printf("-------------------------------------------\n");
+                    printPieceArray();
+                    printBoard();
+                    printf("-------------------------------------------\n");
                     exit(1);
                 }
             break;
@@ -255,7 +270,12 @@ int updateArray(bool isGold, int p, int shift, char direction){
                 else if (ARIMAABOARD.goldPositions[HORSE2_POS] == shift)
                     i = HORSE2_POS;
                 else{
-                    printf("peice array update error\n");
+                    printf("\npeice array update error:\n");
+                    printf("H: %d %c\n", shift, direction);
+                    printf("-------------------------------------------\n");
+                    printPieceArray();
+                    printBoard();
+                    printf("-------------------------------------------\n");
                     exit(1);
                 }
             break;
@@ -263,7 +283,12 @@ int updateArray(bool isGold, int p, int shift, char direction){
                 if (ARIMAABOARD.goldPositions[CAMMEL_POS] == shift)
                     i =CAMMEL_POS;
                 else{
-                    printf("peice array update error\n");
+                    printf("\npeice array update error:\n");
+                    printf("M: %d %c\n", shift, direction);
+                    printf("-------------------------------------------\n");
+                    printPieceArray();
+                    printBoard();
+                    printf("-------------------------------------------\n");
                     exit(1);
                 }
             break;
@@ -271,7 +296,12 @@ int updateArray(bool isGold, int p, int shift, char direction){
                 if (ARIMAABOARD.goldPositions[ELEPHANT_POS] == shift)
                     i =ELEPHANT_POS;
                 else{
-                    printf("peice array update error\n");
+                    printf("\npeice array update error:\n");
+                    printf("E: %d %c\n", shift, direction);
+                    printf("-------------------------------------------\n");
+                    printPieceArray();
+                    printBoard();
+                    printf("-------------------------------------------\n");
                     exit(1);
                 }
             break;
@@ -279,16 +309,22 @@ int updateArray(bool isGold, int p, int shift, char direction){
 
         switch(direction){
             case 'n':
-                ARIMAABOARD.goldPositions[i] += 8;
-                break;
-            case 'e':
-                ARIMAABOARD.goldPositions[i] -= 1;
-                break;
-            case 's':
                 ARIMAABOARD.goldPositions[i] -= 8;
                 break;
-            case 'w':
+            case 'e':
                 ARIMAABOARD.goldPositions[i] += 1;
+                break;
+            case 's':
+                ARIMAABOARD.goldPositions[i] += 8;
+                break;
+            case 'w':
+                ARIMAABOARD.goldPositions[i] -= 1;
+                break;
+            case 'x':
+                ARIMAABOARD.goldPositions[i] = 64;
+                break;
+            default:
+                printf("error, invalid direction: %c\n", direction);
                 break;
         }
     }
@@ -299,7 +335,12 @@ int updateArray(bool isGold, int p, int shift, char direction){
                 while (ARIMAABOARD.silverPositions[i] != shift){
                     i++;
                     if (i >= 8){
-                        printf("peice array update error\n");
+                        printf("\npeice array update error:\n");
+                        printf("r: %d %c\n", shift, direction);
+                        printf("-------------------------------------------\n");
+                        printPieceArray();
+                        printBoard();
+                        printf("-------------------------------------------\n");
                         exit(1);
                     }
                 }
@@ -310,7 +351,12 @@ int updateArray(bool isGold, int p, int shift, char direction){
                 else if (ARIMAABOARD.silverPositions[CAT2_POS] == shift)
                     i = CAT2_POS;
                 else{
-                    printf("peice array update error\n");
+                    printf("\npeice array update error:\n");
+                    printf("c: %d %c\n", shift, direction);
+                    printf("-------------------------------------------\n");
+                    printPieceArray();
+                    printBoard();
+                    printf("-------------------------------------------\n");
                     exit(1);
                 }
             break;
@@ -320,7 +366,12 @@ int updateArray(bool isGold, int p, int shift, char direction){
                 else if (ARIMAABOARD.silverPositions[DOG2_POS] == shift)
                     i = DOG2_POS;
                 else{
-                    printf("peice array update error\n");
+                    printf("\npeice array update error:\n");
+                    printf("d: %d %c\n", shift, direction);
+                    printf("-------------------------------------------\n");
+                    printPieceArray();
+                    printBoard();
+                    printf("-------------------------------------------\n");
                     exit(1);
                 }
             break;
@@ -330,7 +381,12 @@ int updateArray(bool isGold, int p, int shift, char direction){
                 else if (ARIMAABOARD.silverPositions[HORSE2_POS] == shift)
                     i = HORSE2_POS;
                 else{
-                    printf("peice array update error\n");
+                    printf("\npeice array update error:\n");
+                    printf("h: %d %c\n", shift, direction);
+                    printf("-------------------------------------------\n");
+                    printPieceArray();
+                    printBoard();
+                    printf("-------------------------------------------\n");
                     exit(1);
                 }
             break;
@@ -338,7 +394,12 @@ int updateArray(bool isGold, int p, int shift, char direction){
                 if (ARIMAABOARD.silverPositions[CAMMEL_POS] == shift)
                     i =CAMMEL_POS;
                 else{
-                    printf("peice array update error\n");
+                    printf("\npeice array update error:\n");
+                    printf("m: %d %c\n", shift, direction);
+                    printf("-------------------------------------------\n");
+                    printPieceArray();
+                    printBoard();
+                    printf("-------------------------------------------\n");
                     exit(1);
                 }
             break;
@@ -346,23 +407,34 @@ int updateArray(bool isGold, int p, int shift, char direction){
                 if (ARIMAABOARD.silverPositions[ELEPHANT_POS] == shift)
                     i =ELEPHANT_POS;
                 else{
-                    printf("peice array update error\n");
+                    printf("\npeice array update error:\n");
+                    printf("e: %d %c\n", shift, direction);
+                    printf("-------------------------------------------\n");
+                    printPieceArray();
+                    printBoard();
+                    printf("-------------------------------------------\n");
                     exit(1);
                 }
             break;
         }
         switch(direction){
             case 'n':
-                ARIMAABOARD.goldPositions[i] += 8;
+                ARIMAABOARD.silverPositions[i] -= 8;
                 break;
             case 'e':
-                ARIMAABOARD.goldPositions[i] -= 1;
+                ARIMAABOARD.silverPositions[i] += 1;
                 break;
             case 's':
-                ARIMAABOARD.goldPositions[i] -= 8;
+                ARIMAABOARD.silverPositions[i] += 8;
                 break;
             case 'w':
-                ARIMAABOARD.goldPositions[i] += 1;
+                ARIMAABOARD.silverPositions[i] -= 1;
+                break;
+            case 'x':
+                ARIMAABOARD.silverPositions[i] = 64;
+                break;
+            default:
+                printf("error, invalid direction: %c\n", direction);
                 break;
         }
     }
@@ -388,6 +460,7 @@ uint16_t updateTraps(){
                     (1L << (squares[i] - 1) & friends) == 0L){
                         ARIMAABOARD.gold[j] &= ~(1L << squares[i]);
                         ARIMAABOARD.empty |= 1L << squares[i];
+                        updateArray(true, j, squares[i], 'x');
                         switch (j){
                             case RABBIT:
                                 updatedTraps |= (RTRAPPED << 4*i);
@@ -428,6 +501,7 @@ uint16_t updateTraps(){
                     (1L << (squares[i] - 1) & friends) == 0L){
                         ARIMAABOARD.silver[j] &= ~(1L << squares[i]);
                         ARIMAABOARD.empty ^= 1L << squares[i];
+                        updateArray(false, j, squares[i], 'x');
                         switch (j){
                             case RABBIT:
                                 updatedTraps |= (rTRAPPED << 4*i);
@@ -577,6 +651,7 @@ int updateBoard(char *move){
                     ARIMAABOARD.gold[RABBIT] ^= 1L << ((8*j2) + i2);
                     ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
                     updateTraps(true, RABBIT, 8*j2 + i2);
+                    updateArray(true, RABBIT, 8*j2 + i2, *(move+3));
                     break;
                 case 'r':
                     ARIMAABOARD.silver[RABBIT] ^= 1L << ((8*j1) + i1);
@@ -584,13 +659,15 @@ int updateBoard(char *move){
                     ARIMAABOARD.silver[RABBIT] ^= 1L << ((8*j2) + i2);
                     ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
                     updateTraps(false, RABBIT, 8*j2 + i2);
+                    updateArray(false, RABBIT, 8*j2 + i2, *(move+3));
                     break;
                 case 'C':
                     ARIMAABOARD.gold[CAT] ^= 1L << ((8*j1) + i1);
                     ARIMAABOARD.empty ^= 1L << ((8*j1) + i1);
                     ARIMAABOARD.gold[CAT] ^= 1L << ((8*j2) + i2);
                     ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
-                    updateTraps(true, CAT, 8*j2 + i2);                    
+                    updateTraps(true, CAT, 8*j2 + i2);
+                    updateArray(true, CAT, 8*j2 + i2, *(move+3));
                     break;
                 case 'c':
                     ARIMAABOARD.silver[CAT] ^= 1L << ((8*j1) + i1);
@@ -598,6 +675,7 @@ int updateBoard(char *move){
                     ARIMAABOARD.silver[CAT] ^= 1L << ((8*j2) + i2);
                     ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
                     updateTraps(false, CAT, 8*j2 + i2);
+                    updateArray(false, CAT, 8*j2 + i2, *(move+3));
                     break;
                 case 'D':
                     ARIMAABOARD.gold[DOG] ^= 1L << ((8*j1) + i1);
@@ -605,6 +683,7 @@ int updateBoard(char *move){
                     ARIMAABOARD.gold[DOG] ^= 1L << ((8*j2) + i2);
                     ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
                     updateTraps(true, DOG, 8*j2 + i2);
+                    updateArray(true, DOG, 8*j2 + i2, *(move+3));
                     break;
                 case 'd':
                     ARIMAABOARD.silver[DOG] ^= 1L << ((8*j1) + i1);
@@ -612,6 +691,7 @@ int updateBoard(char *move){
                     ARIMAABOARD.silver[DOG] ^= 1L << ((8*j2) + i2);
                     ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
                     updateTraps(false, DOG, 8*j2 + i2);
+                    updateArray(false, DOG, 8*j2 + i2, *(move+3));
                     break;
                 case 'H':
                     ARIMAABOARD.gold[HORSE] ^= 1L << ((8*j1) + i1);
@@ -619,6 +699,7 @@ int updateBoard(char *move){
                     ARIMAABOARD.gold[HORSE] ^= 1L << ((8*j2) + i2);
                     ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
                     updateTraps(true, HORSE, 8*j2 + i2);
+                    updateArray(true, HORSE, 8*j2 + i2, *(move+3));
                     break;
                 case 'h':
                     ARIMAABOARD.silver[HORSE] ^= 1L << ((8*j1) + i1);
@@ -626,6 +707,7 @@ int updateBoard(char *move){
                     ARIMAABOARD.silver[HORSE] ^= 1L << ((8*j2) + i2);
                     ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
                     updateTraps(false, HORSE, 8*j2 + i2);
+                    updateArray(false, HORSE, 8*j2 + i2, *(move+3));
                     break;
                 case 'M':
                     ARIMAABOARD.gold[CAMMEL] ^= 1L << ((8*j1) + i1);
@@ -633,6 +715,7 @@ int updateBoard(char *move){
                     ARIMAABOARD.gold[CAMMEL] ^= 1L << ((8*j2) + i2);
                     ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
                     updateTraps(true, CAMMEL, 8*j2 + i2);
+                    updateArray(true, CAMMEL, 8*j2 + i2, *(move+3));
                     break;
                 case 'm':
                     ARIMAABOARD.silver[CAMMEL] ^= 1L << ((8*j1) + i1);
@@ -640,6 +723,7 @@ int updateBoard(char *move){
                     ARIMAABOARD.silver[CAMMEL] ^= 1L << ((8*j2) + i2);
                     ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
                     updateTraps(false, CAMMEL, 8*j2 + i2);
+                    updateArray(false, CAMMEL, 8*j2 + i2, *(move+3));
                     break;
                 case 'E':
                     ARIMAABOARD.gold[ELEPHANT] ^= 1L << ((8*j1) + i1);
@@ -647,6 +731,7 @@ int updateBoard(char *move){
                     ARIMAABOARD.gold[ELEPHANT] ^= 1L << ((8*j2) + i2);
                     ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
                     updateTraps(true, ELEPHANT, 8*j2 + i2);
+                    updateArray(true, ELEPHANT, 8*j2 + i2, *(move+3));
                     break;
                 case 'e':
                     ARIMAABOARD.silver[ELEPHANT] ^= 1L << ((8*j1) + i1);
@@ -654,6 +739,7 @@ int updateBoard(char *move){
                     ARIMAABOARD.silver[ELEPHANT] ^= 1L << ((8*j2) + i2);
                     ARIMAABOARD.empty ^= 1L << ((8*j2) + i2);
                     updateTraps(false, ELEPHANT, 8*j2 + i2);
+                    updateArray(false, ELEPHANT, 8*j2 + i2, *(move+3));
                     break;
                 case 'p':
                     return 0;
@@ -671,34 +757,34 @@ int updateBoard(char *move){
     return 0;
 }
 
-int printPrieceArray(){
+int printPieceArray(){
     for (int i = 0; i < 8; i++){
-        printf("R%d:%d ", i+1, ARIMAABOARD.goldPositions[i]);
+        printf("R%d: %02d ", i+1, ARIMAABOARD.goldPositions[i]);
     }
     printf("\n");
-    printf("C1:%d ", ARIMAABOARD.goldPositions[CAT1_POS]);
-    printf("C2:%d ", ARIMAABOARD.goldPositions[CAT2_POS]);
-    printf("D1:%d ", ARIMAABOARD.goldPositions[DOG1_POS]);
-    printf("D2:%d ", ARIMAABOARD.goldPositions[DOG2_POS]);
-    printf("H1:%d ", ARIMAABOARD.goldPositions[HORSE1_POS]);
-    printf("H2:%d ", ARIMAABOARD.goldPositions[HORSE2_POS]);
-    printf("C:%d ", ARIMAABOARD.goldPositions[CAMMEL_POS]);
-    printf("E:%d\n", ARIMAABOARD.goldPositions[ELEPHANT_POS]);
+    printf("C1: %02d ", ARIMAABOARD.goldPositions[CAT1_POS]);
+    printf("C2: %02d ", ARIMAABOARD.goldPositions[CAT2_POS]);
+    printf("D1: %02d ", ARIMAABOARD.goldPositions[DOG1_POS]);
+    printf("D2: %02d ", ARIMAABOARD.goldPositions[DOG2_POS]);
+    printf("H1: %02d ", ARIMAABOARD.goldPositions[HORSE1_POS]);
+    printf("H2: %02d ", ARIMAABOARD.goldPositions[HORSE2_POS]);
+    printf("M1: %02d ", ARIMAABOARD.goldPositions[CAMMEL_POS]);
+    printf("E1: %02d\n", ARIMAABOARD.goldPositions[ELEPHANT_POS]);
 
     printf("\n");
 
     for (int i = 0; i < 8; i++){
-        printf("r%d:%d ", i+1, ARIMAABOARD.silverPositions[i]);
+        printf("r%d: %02d ", i+1, ARIMAABOARD.silverPositions[i]);
     }
     printf("\n");
-    printf("c1:%d ", ARIMAABOARD.silverPositions[CAT1_POS]);
-    printf("c2:%d ", ARIMAABOARD.silverPositions[CAT2_POS]);
-    printf("d1:%d ", ARIMAABOARD.silverPositions[DOG1_POS]);
-    printf("d2:%d ", ARIMAABOARD.silverPositions[DOG2_POS]);
-    printf("h1:%d ", ARIMAABOARD.silverPositions[HORSE1_POS]);
-    printf("h2:%d ", ARIMAABOARD.silverPositions[HORSE2_POS]);
-    printf("c:%d ", ARIMAABOARD.silverPositions[CAMMEL_POS]);
-    printf("e:%d\n", ARIMAABOARD.silverPositions[ELEPHANT_POS]);
+    printf("c1: %02d ", ARIMAABOARD.silverPositions[CAT1_POS]);
+    printf("c2: %02d ", ARIMAABOARD.silverPositions[CAT2_POS]);
+    printf("d1: %02d ", ARIMAABOARD.silverPositions[DOG1_POS]);
+    printf("d2: %02d ", ARIMAABOARD.silverPositions[DOG2_POS]);
+    printf("h1: %02d ", ARIMAABOARD.silverPositions[HORSE1_POS]);
+    printf("h2: %02d ", ARIMAABOARD.silverPositions[HORSE2_POS]);
+    printf("m1: %02d ", ARIMAABOARD.silverPositions[CAMMEL_POS]);
+    printf("e1: %02d\n", ARIMAABOARD.silverPositions[ELEPHANT_POS]);
 
     return 0;
 }

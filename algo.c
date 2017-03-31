@@ -648,6 +648,7 @@ int updateBoardBit(uint16_t move){
         case(DIRECTIONN):
             i2 = i1;
             j2 = j1 - 1;
+            updateArray(isGold, p, 8*j1+i1, 'n');
             if (isGold)
                 ARIMAABOARD.gWave++;
             else
@@ -656,10 +657,12 @@ int updateBoardBit(uint16_t move){
         case(DIRECTIONE):
             i2 = i1 + 1;
             j2 = j1;
+            updateArray(isGold, p, 8*j1+i1, 'e');
             break;
         case(DIRECTIONS):
             i2 = i1;
             j2 = j1 + 1;
+            updateArray(isGold, p, 8*j1+i1, 's');
             if (isGold)
                 ARIMAABOARD.gWave--;
             else
@@ -668,6 +671,7 @@ int updateBoardBit(uint16_t move){
         case(DIRECTIONW):
             i2 = i1 - 1;
             j2 = j1;
+            updateArray(isGold, p, 8*j1+i1, 'w');
             break;
         default:
             printf("move corrupt\n");
@@ -941,8 +945,8 @@ uint16_t *generateMovesFromBoard(uint64_t *bitboards, bool isGold, int movesLeft
     }
     int size = numOfMoves + numOfPushes + numOfPulls;
     if (size == 0){
-        printf("ERROR\n");
-        exit(1);
+        printf("no moves\n");
+        return 0;//exit(1);
     }
     uint16_t *moves = calloc(size, sizeof(uint16_t));
     if(moves == NULL){
@@ -1467,84 +1471,96 @@ int undoTraps(uint16_t updatedTraps){
         if (test == (RTRAPPED << 4*i)){
             ARIMAABOARD.gold[RABBIT] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
-            ARIMAABOARD.gMaterial += ARIMAABOARD.weights[0];
+            setupArray(true, RABBIT, squares[i]);
+            ARIMAABOARD.gMaterial += ARIMAABOARD.weights[RABBIT];
             continue;
         }
 
         if (test == (CTRAPPED << 4*i)){
             ARIMAABOARD.gold[CAT] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
-            ARIMAABOARD.gMaterial += ARIMAABOARD.weights[1];
+            setupArray(true, CAT, squares[i]);
+            ARIMAABOARD.gMaterial += ARIMAABOARD.weights[CAT];
             continue;
         }
 
         if (test == (DTRAPPED << 4*i)){
             ARIMAABOARD.gold[DOG] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
-            ARIMAABOARD.gMaterial += ARIMAABOARD.weights[2];
+            setupArray(true, DOG, squares[i]);
+            ARIMAABOARD.gMaterial += ARIMAABOARD.weights[DOG];
             continue;
         }
 
         if (test == (HTRAPPED << 4*i)){
             ARIMAABOARD.gold[HORSE] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
-            ARIMAABOARD.gMaterial += ARIMAABOARD.weights[3];
+            setupArray(true, HORSE, squares[i]);
+            ARIMAABOARD.gMaterial += ARIMAABOARD.weights[HORSE];
             continue;
         }
 
         if (test == (MTRAPPED << 4*i)){
             ARIMAABOARD.gold[CAMMEL] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
-            ARIMAABOARD.gMaterial += ARIMAABOARD.weights[4];
+            setupArray(true, CAMMEL, squares[i]);
+            ARIMAABOARD.gMaterial += ARIMAABOARD.weights[CAMMEL];
             continue;
         }
 
         if (test == (ETRAPPED << 4*i)){
             ARIMAABOARD.gold[ELEPHANT] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
-            ARIMAABOARD.gMaterial += ARIMAABOARD.weights[5];
+            setupArray(true, ELEPHANT, squares[i]);
+            ARIMAABOARD.gMaterial += ARIMAABOARD.weights[ELEPHANT];
             continue;
         }
 
         if (test == (rTRAPPED << 4*i)){
             ARIMAABOARD.silver[RABBIT] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
-            ARIMAABOARD.sMaterial += ARIMAABOARD.weights[0];
+            setupArray(false, RABBIT, squares[i]);
+            ARIMAABOARD.sMaterial += ARIMAABOARD.weights[RABBIT];
             continue;
         }
 
         if (test == (cTRAPPED << 4*i)){
             ARIMAABOARD.silver[CAT] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
-            ARIMAABOARD.sMaterial += ARIMAABOARD.weights[1];
+            setupArray(false, CAT, squares[i]);
+            ARIMAABOARD.sMaterial += ARIMAABOARD.weights[CAT];
             continue;
         }
 
         if (test == (dTRAPPED << 4*i)){
             ARIMAABOARD.silver[DOG] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
-            ARIMAABOARD.sMaterial += ARIMAABOARD.weights[2];
+            setupArray(false, DOG, squares[i]);
+            ARIMAABOARD.sMaterial += ARIMAABOARD.weights[DOG];
             continue;
         }
 
         if (test == (hTRAPPED << 4*i)){
             ARIMAABOARD.silver[HORSE] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
-            ARIMAABOARD.sMaterial += ARIMAABOARD.weights[3];
+            setupArray(false, HORSE, squares[i]);
+            ARIMAABOARD.sMaterial += ARIMAABOARD.weights[HORSE];
             continue;
         }
 
         if (test == (mTRAPPED << 4*i)){
             ARIMAABOARD.silver[CAMMEL] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
-            ARIMAABOARD.sMaterial += ARIMAABOARD.weights[4];
+            setupArray(false, CAMMEL, squares[i]);
+            ARIMAABOARD.sMaterial += ARIMAABOARD.weights[CAMMEL];
             continue;
         }
 
         if (test == (eTRAPPED << 4*i)){
             ARIMAABOARD.silver[ELEPHANT] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
-            ARIMAABOARD.sMaterial += ARIMAABOARD.weights[5];
+            setupArray(false, ELEPHANT, squares[i]);
+            ARIMAABOARD.sMaterial += ARIMAABOARD.weights[ELEPHANT];
             continue;
         }
 
@@ -1677,21 +1693,22 @@ int generateMoves(bool isGold, uint16_t *moves, int movesLeft, struct Hash *move
                             for (int j = 0; j  < pushes; j++){
 
                                 uint16_t lastMove = *(pushMoves + j);
-                                updateBoardBit(lastMove);
-                                uint16_t updatedTraps = updateTraps();
-                                moves[4-movesLeft] = lastMove;
-
                                 uint16_t lastMove2 = conMove(isGold,p,shift%8,shift/8,'n');
+                                updateBoardBit(lastMove);
                                 updateBoardBit(lastMove2);
+
+                                uint16_t updatedTraps = updateTraps();
                                 uint16_t updatedTraps2 = updateTraps();
+
+                                moves[4-movesLeft] = lastMove;
                                 moves[4-movesLeft+1] = lastMove2;
 
                                 generateMoves(isGold, moves, movesLeft-2, moveHash);
 
-                                undoTraps(updatedTraps2);
-                                undoMove(lastMove2);
-                                
+                                undoTraps(updatedTraps2);                                
                                 undoTraps(updatedTraps);
+
+                                undoMove(lastMove2);
                                 undoMove(lastMove);
                                 i += 2;
                             }
@@ -1704,21 +1721,22 @@ int generateMoves(bool isGold, uint16_t *moves, int movesLeft, struct Hash *move
                             for (int j = 0; j < pushes; j++){
 
                                 uint16_t lastMove = *(pushMoves + j);
-                                updateBoardBit(lastMove);
-                                uint16_t updatedTraps = updateTraps();
-                                moves[4-movesLeft] = lastMove;
-
                                 uint16_t lastMove2 = conMove(isGold,p,shift%8,shift/8,'w');
+                                updateBoardBit(lastMove);
                                 updateBoardBit(lastMove2);
+
+                                uint16_t updatedTraps = updateTraps();
                                 uint16_t updatedTraps2 = updateTraps();
-                                moves[4-movesLeft+1] = lastMove2;\
+
+                                moves[4-movesLeft] = lastMove;
+                                moves[4-movesLeft+1] = lastMove2;
 
                                 generateMoves(isGold, moves, movesLeft-2, moveHash);
 
-                                undoTraps(updatedTraps2);
-                                undoMove(lastMove2);
-
+                                undoTraps(updatedTraps2);                                
                                 undoTraps(updatedTraps);
+
+                                undoMove(lastMove2);
                                 undoMove(lastMove);
                                 i += 2;
                             }
@@ -1731,21 +1749,22 @@ int generateMoves(bool isGold, uint16_t *moves, int movesLeft, struct Hash *move
                             for (int j = 0; j < pushes; j++){
 
                                 uint16_t lastMove = *(pushMoves + j);
-                                updateBoardBit(lastMove);
-                                uint16_t updatedTraps = updateTraps();
-                                moves[4-movesLeft] = lastMove;
-
                                 uint16_t lastMove2 = conMove(isGold,p,shift%8,shift/8,'e');
+                                updateBoardBit(lastMove);
                                 updateBoardBit(lastMove2);
+
+                                uint16_t updatedTraps = updateTraps();
                                 uint16_t updatedTraps2 = updateTraps();
-                                moves[4-movesLeft+1] = lastMove2;\
+
+                                moves[4-movesLeft] = lastMove;
+                                moves[4-movesLeft+1] = lastMove2;
 
                                 generateMoves(isGold, moves, movesLeft-2, moveHash);
 
-                                undoTraps(updatedTraps2);
-                                undoMove(lastMove2);
-
+                                undoTraps(updatedTraps2);                                
                                 undoTraps(updatedTraps);
+
+                                undoMove(lastMove2);
                                 undoMove(lastMove);
 
                                 i += 2;
@@ -1759,21 +1778,22 @@ int generateMoves(bool isGold, uint16_t *moves, int movesLeft, struct Hash *move
                             for (int j = 0; j<pushes; j++){
 
                                 uint16_t lastMove = *(pushMoves + j);
-                                updateBoardBit(lastMove);
-                                uint16_t updatedTraps = updateTraps();
-                                moves[4-movesLeft] = lastMove;
-
                                 uint16_t lastMove2 = conMove(isGold,p,shift%8,shift/8,'s');
+                                updateBoardBit(lastMove);
                                 updateBoardBit(lastMove2);
+
+                                uint16_t updatedTraps = updateTraps();
                                 uint16_t updatedTraps2 = updateTraps();
+
+                                moves[4-movesLeft] = lastMove;
                                 moves[4-movesLeft+1] = lastMove2;
 
                                 generateMoves(isGold, moves, movesLeft-2, moveHash);
 
-                                undoTraps(updatedTraps2);
-                                undoMove(lastMove2);
-
+                                undoTraps(updatedTraps2);                                
                                 undoTraps(updatedTraps);
+
+                                undoMove(lastMove2);
                                 undoMove(lastMove);
 
                                 i += 2;
@@ -1802,22 +1822,22 @@ int generateMoves(bool isGold, uint16_t *moves, int movesLeft, struct Hash *move
                             for (int j = 0; j < pulls; j++){
 
                                 uint16_t lastMove = conMove(isGold, p, shift%8, shift/8, 'n');
-                                updateBoardBit(lastMove);
-                                uint16_t updatedTraps = updateTraps();
-                                moves[4-movesLeft] = lastMove;
-
                                 uint16_t lastMove2 = *(pullMoves + j);
+                                updateBoardBit(lastMove);
                                 updateBoardBit(lastMove2);
+
+                                uint16_t updatedTraps = updateTraps();
                                 uint16_t updatedTraps2 = updateTraps();
+
+                                moves[4-movesLeft] = lastMove;
                                 moves[4-movesLeft+1] = lastMove2;
                                 
-
                                 generateMoves(isGold, moves, movesLeft-2, moveHash);
 
-                                undoTraps(updatedTraps2);
-                                undoMove(lastMove2);
-
+                                undoTraps(updatedTraps2);                                
                                 undoTraps(updatedTraps);
+
+                                undoMove(lastMove2);
                                 undoMove(lastMove);
                                 
                                 i += 2;
@@ -1831,21 +1851,22 @@ int generateMoves(bool isGold, uint16_t *moves, int movesLeft, struct Hash *move
                             for (int j = 0; j < pulls; j++){
 
                                 uint16_t lastMove = conMove(isGold, p, shift%8, shift/8, 'w');
-                                updateBoardBit(lastMove);
-                                uint16_t updatedTraps = updateTraps();
-                                moves[4-movesLeft] = lastMove;
-
                                 uint16_t lastMove2 = *(pullMoves + j);
+                                updateBoardBit(lastMove);
                                 updateBoardBit(lastMove2);
+
+                                uint16_t updatedTraps = updateTraps();
                                 uint16_t updatedTraps2 = updateTraps();
+
+                                moves[4-movesLeft] = lastMove;
                                 moves[4-movesLeft+1] = lastMove2;
 
                                 generateMoves(isGold, moves, movesLeft-2, moveHash);
 
-                                undoTraps(updatedTraps2);
-                                undoMove(lastMove2);
-
+                                undoTraps(updatedTraps2);                                
                                 undoTraps(updatedTraps);
+
+                                undoMove(lastMove2);
                                 undoMove(lastMove);
                                 
                                 i += 2;
@@ -1859,22 +1880,22 @@ int generateMoves(bool isGold, uint16_t *moves, int movesLeft, struct Hash *move
                             for (int j = 0; j < pulls; j++){
 
                                 uint16_t lastMove = conMove(isGold, p, shift%8, shift/8, 'e');
-                                updateBoardBit(lastMove);
-                                uint16_t updatedTraps = updateTraps();
-                                moves[4-movesLeft] = lastMove;
-
                                 uint16_t lastMove2 = *(pullMoves + j);
+                                updateBoardBit(lastMove);
                                 updateBoardBit(lastMove2);
+
+                                uint16_t updatedTraps = updateTraps();
                                 uint16_t updatedTraps2 = updateTraps();
-                                moves[4-movesLeft+1] = lastMove2;
-                                
+
+                                moves[4-movesLeft] = lastMove;
+                                moves[4-movesLeft+1] = lastMove2;                                
 
                                 generateMoves(isGold, moves, movesLeft-2, moveHash);
 
-                                undoTraps(updatedTraps2);
-                                undoMove(lastMove2);
-
+                                undoTraps(updatedTraps2);                                
                                 undoTraps(updatedTraps);
+
+                                undoMove(lastMove2);
                                 undoMove(lastMove);
                                 
                                 i += 2;
@@ -1888,21 +1909,22 @@ int generateMoves(bool isGold, uint16_t *moves, int movesLeft, struct Hash *move
                             for (int j = 0; j<pulls; j++){
 
                                 uint16_t lastMove = conMove(isGold, p, shift%8, shift/8, 's');
-                                updateBoardBit(lastMove);
-                                uint16_t updatedTraps = updateTraps();
-                                moves[4-movesLeft] = lastMove;
-
                                 uint16_t lastMove2 = *(pullMoves + j);
+                                updateBoardBit(lastMove);
                                 updateBoardBit(lastMove2);
+
+                                uint16_t updatedTraps = updateTraps();
                                 uint16_t updatedTraps2 = updateTraps();
+
+                                moves[4-movesLeft] = lastMove;
                                 moves[4-movesLeft+1] = lastMove2;
 
                                 generateMoves(isGold, moves, movesLeft-2, moveHash);
 
-                                undoTraps(updatedTraps2);
-                                undoMove(lastMove2);
-
+                                undoTraps(updatedTraps2);                                
                                 undoTraps(updatedTraps);
+
+                                undoMove(lastMove2);
                                 undoMove(lastMove);
                                 
                                 i += 2;
@@ -2055,7 +2077,6 @@ bool makeRandomMoves(bool isGold, int movesLeft){
     if (!gameOver(isGold)){
         if (movesLeft == 0){
             goldWon = makeRandomMoves(!isGold, 4);
-            //printf("switch\n");
             return goldWon;
         }
 
@@ -2076,25 +2097,18 @@ bool makeRandomMoves(bool isGold, int movesLeft){
             else
                 return true;
         }
-        //printf("1\n");
-        //for (int i = 0; i < 16; i++){
-            //printf("%d\n-----------\n", i);
-            //printBitboard(*(bitboards + i));
-        //}
         uint16_t *moves = generateMovesFromBoard(bitboards, isGold, movesLeft);
-        //printf("2\n");
         free(bitboards);
 
 
         int randomIndex = (rand() % size);
-        //getchar();
         if (randomIndex >= 0 && randomIndex < numOfMoves){
             uint16_t move = *(moves + randomIndex);
             free(moves);
-            //printf("move\n");
+
             updateBoardBit(move);
             uint16_t updatedTraps = updateTraps();
-            //printBoard();
+
             goldWon = makeRandomMoves(isGold, movesLeft-1);
 
             undoTraps(updatedTraps);
@@ -2108,17 +2122,17 @@ bool makeRandomMoves(bool isGold, int movesLeft){
             uint16_t move = *(moves + randomIndex);
             uint16_t move2 = *(moves + randomIndex + 1);
             free(moves);
-            //printf("push\n");
+
             updateBoardBit(move);
-            uint16_t updatedTraps = updateTraps();
             updateBoardBit(move2);
+            uint16_t updatedTraps = updateTraps();
             uint16_t updatedTraps2 = updateTraps();
-            //printBoard();
+
             goldWon = makeRandomMoves(isGold, movesLeft-2);
 
             undoTraps(updatedTraps2);
-            undoMove(move2);
             undoTraps(updatedTraps);
+            undoMove(move2);
             undoMove(move);
         }
         else if (randomIndex >= (numOfMoves + numOfPushes) && randomIndex < size){
@@ -2128,23 +2142,21 @@ bool makeRandomMoves(bool isGold, int movesLeft){
             uint16_t move = *(moves + randomIndex);
             uint16_t move2 = *(moves + randomIndex + 1);
             free(moves);
-            //printf("pull\n");
+
             updateBoardBit(move);
-            uint16_t updatedTraps = updateTraps();
             updateBoardBit(move2);
+            uint16_t updatedTraps = updateTraps();
             uint16_t updatedTraps2 = updateTraps();
-            //printBoard();
+
             goldWon = makeRandomMoves(isGold, movesLeft-2);
 
             undoTraps(updatedTraps2);
-            undoMove(move2);
             undoTraps(updatedTraps);
+            undoMove(move2);
             undoMove(move);
         }
-        //printf("recuring\n");
         return goldWon;
     }
-    //printf("recuring from leaf\n");
     return goldWin(isGold);
 }
 
@@ -2174,7 +2186,7 @@ int monteCarloTS(bool isGold, double tTime){
     for (int i = 0; i < numOfElements; i++){
         //printf("move: %d\n", i);
         for (int game = 0; game < 10; game++){
-            //printf("\tgame: %d\n", j);
+            //printf("\tgame: %d\n", game);
             //printBoard();
             uint16_t updatedTraps[4];
             for (int j = 0; j < 4; j++){
