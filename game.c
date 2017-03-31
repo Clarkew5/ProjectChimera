@@ -12,6 +12,8 @@ struct Board ARIMAABOARD = {
     .silverPositions = {64, 64, 64, 64, 64, 64, 64, 64,
                         64, 64, 64, 64, 64, 64, 64, 64},
 
+    .pieceIndexes = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 5},
+
     .weights = {1, 2, 3, 5, 9, 13}, //weights borrowed from bomb.
     .gMaterial = 50,
     .sMaterial = 50,

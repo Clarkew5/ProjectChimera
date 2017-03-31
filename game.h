@@ -46,6 +46,8 @@ struct Board{
     uint8_t goldPositions[16];
     uint8_t silverPositions[16];
 
+    int pieceIndexes[16];
+
     int weights[6];
     int gMaterial;
     int sMaterial;
