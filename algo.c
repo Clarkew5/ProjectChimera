@@ -1667,10 +1667,10 @@ int generateMoves(bool isGold, uint16_t *moves, int movesLeft, struct Hash *move
                 undoTraps(updatedTraps);
                 undoMove(lastMove);
         }
-        /*
-        if (movesLeft-2 < 0)
+        
+        if (p == 0 || movesLeft-2 < 0)
             continue;
-
+        
         //pushes
         if((piece >> 8 != 0L) &&
             ((piece >> 8) & *(bitboards+p+5)) == (piece >> 8)){
@@ -1889,7 +1889,7 @@ int generateMoves(bool isGold, uint16_t *moves, int movesLeft, struct Hash *move
                 } 
                 free(pullMoves);
         }
-    */
+    
     }
     
     free(bitboards);
