@@ -27,23 +27,24 @@ int main(int argc, char *argv[]){
         negaMaxSearch(GOLD, 3600);
         //monteCarloTS(GOLD, 3600);
         printBoard();
-        //printPieceArray();
-        if (gameOver(GOLD))
+        printPieceArray();
+        if (gameOver(GOLD) || gameOver(SILVER))
             break;
         boardCheck = 0L;
         for(int i = 0; i < 6; i++){
             boardCheck &= ARIMAABOARD.gold[i];
             boardCheck &= ARIMAABOARD.silver[i];  
         }
-        //getchar();
+        printf("\n");
 
         //silver
         printf("%ds: ", turnNumber);
-        monteCarloTS(GOLD, 3600);
-        //randomAgent(SILVER);
+        //negaMaxSearch(SILVER, 3600);
+        //monteCarloTS(SILVER, 3600);
+        randomAgent(SILVER);
         printBoard();
-        //printPieceArray();
-        if (gameOver(SILVER))
+        printPieceArray();
+        if (gameOver(SILVER) || gameOver(GOLD))
             break;
         boardCheck = 0L;
         for(int i = 0; i < 6; i++){
@@ -55,7 +56,7 @@ int main(int argc, char *argv[]){
             printf("board corrupted by silver\n");
             return 1;
         }
-        //getchar();
+        printf("\n");
 
         turnNumber++;
     }
