@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "game.h"
-#include "algo.h"
+#include "algoShared.h"
+#include "randomAgent.h"
+#include "negaMax.h"
+#include "monteCarlo.h"
 
 #define GOLD true
 #define SILVER false

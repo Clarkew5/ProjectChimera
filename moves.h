@@ -1,16 +1,12 @@
-#ifndef ALGO
-#define ALGO
+#ifndef MOVES
+#define MOVES
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
-#include <inttypes.h>
 #include <stdbool.h>
-#include <time.h>
-#include <limits.h>
 #include "game.h"
-#include "hash.h"
 
 /*--move masks----------------------------------------------------------------*/
 #define pieceMask       0b0000111100000000
@@ -56,21 +52,12 @@
 
 /*----------------------------------------------------------------------------*/
 
-int randomAgent(bool isGold);
-int numberOfMovesForSquare(bool isGold, int shift);
-int numberOfMoves(uint64_t *bitboards, bool isGold);
-int numberOfPushes(uint64_t *bitboards, bool isGold);
-int numberOfPulls(uint64_t *bitboards, bool isGold);
-uint16_t *generateMovesFromBoard(uint64_t *bitboards, bool isGold, int movesLeft);
-int numberOfMovesToSquare(bool isGold, int shift);
-uint16_t *movesToASquare(bool isGold, uint64_t *bitboards, int shift, int numOfMoves);
-uint64_t *generateMoveBitboards(bool isGold);
-int printBitboard(uint64_t bitboard);
+uint16_t conMove(bool isGold, int piece, int i, int j, char direction);
+int updateBoardBit(uint16_t move);
 int printMove(uint16_t move);
-bool gameOver(bool isGold);
-int heuristic(bool isGold);
-int negaMaxSearch(bool isGold, double tTime);
-int monteCarloTS(bool isGold, double tTime);
-bool playRandomGame(bool isGold, uint16_t *move);
-struct Hash *branchHash(bool isGold);
+int undoMove(uint16_t lastMove);
+int undoTraps(uint16_t updatedTraps);
+int undoMove(uint16_t lastMove);
+int undoTraps(uint16_t updatedTraps);
+
 #endif

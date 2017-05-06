@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
-#include "algo.h"
+#include "algoShared.h"
 #include "game.h"
 
 struct Hash{

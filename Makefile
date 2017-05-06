@@ -7,13 +7,19 @@ all: arimaa
 
 game.o: game.c game.h
 
-algo.o: algo.c algo.h
+algoShared.o: algoShared.c algoShared.h
 
 hash.o: hash.c hash.h
 
-test: test.c game.o algo.o hash.o
+moves.o: moves.h moves.c
 
-arimaa: arimaa.c game.o algo.o hash.o
+randomAgent.o: randomAgent.c randomAgent.h
+
+negaMax.o: negaMax.c negaMax.h
+
+monteCarlo.o: monteCarlo.c monteCarlo.h
+
+arimaa: arimaa.c game.o algoShared.o hash.o moves.o randomAgent.o negaMax.o monteCarlo.o 
 
 clean:
 	rm *.o arimaa
