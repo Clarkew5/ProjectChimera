@@ -2,7 +2,8 @@
 
 /*----------------------------------------------------------------------------*/
 
-/*the functions between the two lines are taken from a paper.
+/*the functions between the two lines are taken from the paper 
+  "Arimaa: from rules to bitboard analysys" by Stefano Carlini, S Bergamaschi.
   they generate the bitboards used to understand moves*/
 
 uint64_t rEdge = ((1L      ) | (1L <<  8) | (1L << 16) | (1L << 24) | 
@@ -216,34 +217,43 @@ int numberOfMoves(uint64_t *bitboards, bool isGold){
     int numOfMovesEast = 0;
     int numOfMovesSouth = 0;
     int numOfMovesWest = 0;
-    for (int p = 0; p < 6; p++){
-        for (int shift = 0; shift < 64; shift++){
-            //these two loops are used to scan all the bitboads
-            uint64_t i = 1L << shift;
-            uint64_t piece = 0L;
-            if (isGold)
-                piece = i & ARIMAABOARD.gold[p];
-            else
-                piece = i & ARIMAABOARD.silver[p];
 
-            if (piece == i){ //is only exicuted if a piece is on square i
-                //checks if a move is valid around it
-                if((piece >> 8 != 0L) &&
-                    !(p == 0 && !isGold) &&
-                    ((piece >> 8) & *(bitboards+p)) == (piece >> 8))
-                        numOfMovesNorth++;
-                if((piece >> 1 != 0L) &&
-                    ((piece >> 1) & *(bitboards+p) & ~lEdge) == (piece >> 1))
-                        numOfMovesEast++;
-                if((piece << 1 != 0L) &&
-                    ((piece << 1) & *(bitboards+p) & ~rEdge) == (piece << 1))
-                        numOfMovesWest++;
-                if((piece << 8 != 0L) &&
-                    !(p == 0 && isGold) &&
-                    ((piece << 8) & *(bitboards+p)) == (piece << 8))
-                        numOfMovesSouth++;  
-            }
+    for (int index = 0; index < 16; index++){
+        uint64_t piece = 0L;
+        int p = ARIMAABOARD.pieceIndexes[index];
+        int shift = 0; 
+        if (isGold){
+            shift = ARIMAABOARD.goldPositions[index];
+            if (shift == 64)
+                continue;
+            piece = ARIMAABOARD.gold[p] & (1L << shift);
         }
+        else{
+            shift = ARIMAABOARD.silverPositions[index];
+            if (shift == 64)
+                continue;
+            piece = ARIMAABOARD.silver[p] & (1L << shift);
+        }
+
+        if (piece == 0){
+            printf("miss match\n");
+            exit(1);
+        }
+
+        if((piece >> 8 != 0L) &&
+            !(p == 0 && !isGold) &&
+            ((piece >> 8) & *(bitboards+p)) == (piece >> 8))
+                numOfMovesNorth++;
+        if((piece >> 1 != 0L) &&
+            ((piece >> 1) & *(bitboards+p) & ~lEdge) == (piece >> 1))
+                numOfMovesEast++;
+        if((piece << 1 != 0L) &&
+            ((piece << 1) & *(bitboards+p) & ~rEdge) == (piece << 1))
+                numOfMovesWest++;
+        if((piece << 8 != 0L) &&
+            !(p == 0 && isGold) &&
+            ((piece << 8) & *(bitboards+p)) == (piece << 8))
+                numOfMovesSouth++;
     }
     /*the above loop structuer is reused multiple times through-out the code to 
       accomplish different tasks*/
@@ -340,63 +350,96 @@ int numberOfMovesToSquare(bool isGold, int shift){
 int numberOfPushes(uint64_t *bitboards, bool isGold){
     //counts number of push moves
     int numOfPushes = 0;
-    for (int p = 6; p < 11; p++){
-        //bitboards 6-10 represent pushes that can be made
-        for (int shift = 0; shift < 64; shift++){
-            uint64_t square = 1L << shift;
-            uint64_t piece = 0L;
-            //p-5 gets the correct animal
-            if (isGold)
-                piece = square & ARIMAABOARD.gold[p-5];
-            else
-                piece = square & ARIMAABOARD.silver[p-5];
 
-            if (piece == square){
-                if((piece >> 8 != 0L) &&
-                    ((piece >> 8) & *(bitboards+p)) == (piece >> 8))
-                        numOfPushes += numberOfMovesForSquare(!isGold, shift-8);
-                if((piece >> 1 != 0L) &&
-                    ((piece >> 1) & *(bitboards+p) & ~lEdge) == (piece >> 1))
-                        numOfPushes += numberOfMovesForSquare(!isGold, shift-1);
-                if((piece << 1 != 0L) &&
-                    ((piece << 1) & *(bitboards+p) & ~rEdge) == (piece << 1))
-                        numOfPushes += numberOfMovesForSquare(!isGold, shift+1);
-                if((piece << 8 != 0L) &&
-                    ((piece << 8) & *(bitboards+p)) == (piece << 8))
-                        numOfPushes += numberOfMovesForSquare(!isGold, shift+8);  
-            }
+    for (int index = 8; index < 16; index++){
+        uint64_t piece = 0L;
+        int p = ARIMAABOARD.pieceIndexes[index];
+        int shift = 0; 
+        if (isGold){
+            shift = ARIMAABOARD.goldPositions[index];
+            if (shift == 64)
+                continue;
+            piece = ARIMAABOARD.gold[p] & (1L << shift);
         }
+        else{
+            shift = ARIMAABOARD.silverPositions[index];
+            if (shift == 64)
+                continue;
+            piece = ARIMAABOARD.silver[p] & (1L << shift);
+        }
+
+        if (piece == 0){
+            printf("miss match\n");
+            exit(1);
+        }
+
+        uint64_t square = 1L << shift;
+        if (isGold)
+            piece = square & ARIMAABOARD.gold[p];
+        else
+            piece = square & ARIMAABOARD.silver[p];
+
+        if((piece >> 8 != 0L) &&
+            ((piece >> 8) & *(bitboards+p+5)) == (piece >> 8))
+                numOfPushes += numberOfMovesForSquare(!isGold, shift-8);
+        if((piece >> 1 != 0L) &&
+            ((piece >> 1) & *(bitboards+p+5) & ~lEdge) == (piece >> 1))
+                numOfPushes += numberOfMovesForSquare(!isGold, shift-1);
+        if((piece << 1 != 0L) &&
+            ((piece << 1) & *(bitboards+p+5) & ~rEdge) == (piece << 1))
+                numOfPushes += numberOfMovesForSquare(!isGold, shift+1);
+        if((piece << 8 != 0L) &&
+            ((piece << 8) & *(bitboards+p+5)) == (piece << 8))
+                numOfPushes += numberOfMovesForSquare(!isGold, shift+8);  
     }
+
     return numOfPushes;
 }
 
 int numberOfPulls(uint64_t *bitboards, bool isGold){
     int numOfPulls = 0;
-    for (int p = 11; p < 16; p++){
-        //bitboards 11-16 represent pulls that can be made
-        for (int shift = 0; shift < 64; shift++){
-            uint64_t square = 1L << shift;
-            uint64_t piece = 0L;
-            if (isGold)
-                piece = square & ARIMAABOARD.gold[p-10];
-            else
-                piece = square & ARIMAABOARD.silver[p-10];
 
-            if (piece == square){
-                if((piece >> 8 != 0L) &&
-                    ((piece >> 8) & *(bitboards+p)) == (piece >> 8))
-                        numOfPulls += numberOfMovesToSquare(!isGold, shift);
-                if((piece >> 1 != 0L) &&
-                    ((piece >> 1) & *(bitboards+p) & ~lEdge) == (piece >> 1))
-                        numOfPulls += numberOfMovesToSquare(!isGold, shift);
-                if((piece << 1 != 0L) &&
-                    ((piece << 1) & *(bitboards+p) & ~rEdge) == (piece << 1))
-                        numOfPulls += numberOfMovesToSquare(!isGold, shift);
-                if((piece << 8 != 0L) &&
-                    ((piece << 8) & *(bitboards+p)) == (piece << 8))
-                        numOfPulls += numberOfMovesToSquare(!isGold, shift);
-            }
+    for (int index = 8; index < 16; index++){
+        uint64_t piece = 0L;
+        int p = ARIMAABOARD.pieceIndexes[index];
+        int shift = 0; 
+        if (isGold){
+            shift = ARIMAABOARD.goldPositions[index];
+            if (shift == 64)
+                continue;
+            piece = ARIMAABOARD.gold[p] & (1L << shift);
         }
+        else{
+            shift = ARIMAABOARD.silverPositions[index];
+            if (shift == 64)
+                continue;
+            piece = ARIMAABOARD.silver[p] & (1L << shift);
+        }
+
+        if (piece == 0){
+            printf("miss match\n");
+            exit(1);
+        }
+
+
+        uint64_t square = 1L << shift;
+        if (isGold)
+            piece = square & ARIMAABOARD.gold[p];
+        else
+            piece = square & ARIMAABOARD.silver[p];
+
+        if((piece >> 8 != 0L) &&
+            ((piece >> 8) & *(bitboards+p+10)) == (piece >> 8))
+                numOfPulls += numberOfMovesToSquare(!isGold, shift);
+        if((piece >> 1 != 0L) &&
+            ((piece >> 1) & *(bitboards+p+10) & ~lEdge) == (piece >> 1))
+                numOfPulls += numberOfMovesToSquare(!isGold, shift);
+        if((piece << 1 != 0L) &&
+            ((piece << 1) & *(bitboards+p+10) & ~rEdge) == (piece << 1))
+                numOfPulls += numberOfMovesToSquare(!isGold, shift);
+        if((piece << 8 != 0L) &&
+            ((piece << 8) & *(bitboards+p+10)) == (piece << 8))
+                numOfPulls += numberOfMovesToSquare(!isGold, shift);
     }
     return numOfPulls;
 }
@@ -648,6 +691,7 @@ int updateBoardBit(uint16_t move){
         case(DIRECTIONN):
             i2 = i1;
             j2 = j1 - 1;
+            updateArray(isGold, p, 8*j1+i1, 'n');
             if (isGold)
                 ARIMAABOARD.gWave++;
             else
@@ -656,10 +700,12 @@ int updateBoardBit(uint16_t move){
         case(DIRECTIONE):
             i2 = i1 + 1;
             j2 = j1;
+            updateArray(isGold, p, 8*j1+i1, 'e');
             break;
         case(DIRECTIONS):
             i2 = i1;
             j2 = j1 + 1;
+            updateArray(isGold, p, 8*j1+i1, 's');
             if (isGold)
                 ARIMAABOARD.gWave--;
             else
@@ -668,6 +714,7 @@ int updateBoardBit(uint16_t move){
         case(DIRECTIONW):
             i2 = i1 - 1;
             j2 = j1;
+            updateArray(isGold, p, 8*j1+i1, 'w');
             break;
         default:
             printf("move corrupt\n");
@@ -941,8 +988,8 @@ uint16_t *generateMovesFromBoard(uint64_t *bitboards, bool isGold, int movesLeft
     }
     int size = numOfMoves + numOfPushes + numOfPulls;
     if (size == 0){
-        printf("ERROR\n");
-        exit(1);
+        printf("no moves\n");
+        return 0;//exit(1);
     }
     uint16_t *moves = calloc(size, sizeof(uint16_t));
     if(moves == NULL){
@@ -952,165 +999,200 @@ uint16_t *generateMovesFromBoard(uint64_t *bitboards, bool isGold, int movesLeft
 
     for(int i = 0; i < numOfMoves;){//move
         *(moves + i) = 0L;
-        for (int p = 0; p < 6; p++){
-            for (int shift = 0; shift < 64; shift++){
-                uint64_t square = 1L << shift;
-                uint64_t piece = 0L;
-                if (isGold)
-                    piece = square & ARIMAABOARD.gold[p];
-                else
-                    piece = square & ARIMAABOARD.silver[p];
 
-                if (piece == square){
-                    if((piece >> 8 != 0L) &&
-                        !(p == 0 && !isGold) &&
-                        ((piece >> 8) & *(bitboards+p)) == (piece >> 8)){
-                            *(moves + i) = conMove(isGold,p,shift%8,shift/8,'n');
-                            i++;
-                    }
-                    if((piece >> 1 != 0L) &&
-                        ((piece >> 1) & *(bitboards+p) & ~lEdge) == (piece >> 1)){
-                            *(moves + i) = conMove(isGold,p,shift%8,shift/8,'w'); 
-                            i++;
-                    }
-                    if((piece << 1 != 0L) &&
-                        ((piece << 1) & *(bitboards+p) & ~rEdge) == (piece << 1)){
-                            *(moves + i) = conMove(isGold,p,shift%8,shift/8,'e');
-                            i++;
-                    }
-                    if((piece << 8 != 0L) &&
-                        !(p == 0 && isGold) &&
-                        ((piece << 8) & *(bitboards+p)) == (piece << 8)){
-                            *(moves + i) = conMove(isGold,p,shift%8,shift/8,'s'); 
-                            i++;  
-                    }
-                }
+        for (int index = 0; index < 16; index++){
+            uint64_t piece = 0L;
+            int p = ARIMAABOARD.pieceIndexes[index];
+            int shift = 0; 
+            if (isGold){
+                shift = ARIMAABOARD.goldPositions[index];
+                if (shift == 64)
+                    continue;
+                piece = ARIMAABOARD.gold[p] & (1L << shift);
+            }
+            else{
+                shift = ARIMAABOARD.silverPositions[index];
+                if (shift == 64)
+                    continue;
+                piece = ARIMAABOARD.silver[p] & (1L << shift);
+            }
+
+            if (piece == 0){
+                printf("miss match\n");
+                exit(1);
+            }
+
+            if((piece >> 8 != 0L) &&
+                !(p == 0 && !isGold) &&
+                ((piece >> 8) & *(bitboards+p)) == (piece >> 8)){
+                    *(moves + i) = conMove(isGold,p,shift%8,shift/8,'n');
+                    i++;
+            }
+            if((piece >> 1 != 0L) &&
+                ((piece >> 1) & *(bitboards+p) & ~lEdge) == (piece >> 1)){
+                    *(moves + i) = conMove(isGold,p,shift%8,shift/8,'w'); 
+                    i++;
+            }
+            if((piece << 1 != 0L) &&
+                ((piece << 1) & *(bitboards+p) & ~rEdge) == (piece << 1)){
+                    *(moves + i) = conMove(isGold,p,shift%8,shift/8,'e');
+                    i++;
+            }
+            if((piece << 8 != 0L) &&
+                !(p == 0 && isGold) &&
+                ((piece << 8) & *(bitboards+p)) == (piece << 8)){
+                    *(moves + i) = conMove(isGold,p,shift%8,shift/8,'s'); 
+                    i++;  
             }
         }
     }
+
     for(int i = numOfMoves; i < (size - numOfPulls);){//push
         /*if numOfPulls and numOfPushes is 0 then the for loop breaks right away
           because numOfMoves = size*/
-        for (int p = 1; p < 6; p++){
-            for (int shift = 0; shift < 64; shift++){
-                uint64_t square = 1L << shift;
-                uint64_t piece = 0L;
-                if (isGold)
-                    piece = square & ARIMAABOARD.gold[p];
-                else
-                    piece = square & ARIMAABOARD.silver[p];
 
-                if (piece == square){
-                    if((piece >> 8 != 0L) &&
-                        ((piece >> 8) & *(bitboards+p+5)) == (piece >> 8)){
-                            int pushes = numberOfMovesForSquare(!isGold, shift-8);
-                            uint16_t *pushMoves = movesOfASquare(!isGold, bitboards, shift-8, pushes); 
-                            for (int j = 0; j  < pushes; j++){
-                                *(moves + i) = *(pushMoves + j);
-                                *(moves + i + 1) = conMove(isGold,p,shift%8,shift/8,'n');
-                                i+=2;
-                            }
-                            free(pushMoves);
+        for (int index = 8; index < 16; index++){
+            uint64_t piece = 0L;
+            int p = ARIMAABOARD.pieceIndexes[index];
+            int shift = 0; 
+            if (isGold){
+                shift = ARIMAABOARD.goldPositions[index];
+                if (shift == 64)
+                    continue;
+                piece = ARIMAABOARD.gold[p] & (1L << shift);
+            }
+            else{
+                shift = ARIMAABOARD.silverPositions[index];
+                if (shift == 64)
+                    continue;
+                piece = ARIMAABOARD.silver[p] & (1L << shift);
+            }
+
+            if (piece == 0){
+                printf("miss match\n");
+                exit(1);
+            }
+
+            if((piece >> 8 != 0L) &&
+                ((piece >> 8) & *(bitboards+p+5)) == (piece >> 8)){
+                    int pushes = numberOfMovesForSquare(!isGold, shift-8);
+                    uint16_t *pushMoves = movesOfASquare(!isGold, bitboards, shift-8, pushes); 
+                    for (int j = 0; j  < pushes; j++){
+                        *(moves + i) = *(pushMoves + j);
+                        *(moves + i + 1) = conMove(isGold,p,shift%8,shift/8,'n');
+                        i+=2;
                     }
-                    if((piece >> 1 != 0L) &&
-                        ((piece >> 1) & *(bitboards+p+5) & ~lEdge) == (piece >> 1)){
-                            int pushes = numberOfMovesForSquare(!isGold, shift-1);
-                            uint16_t *pushMoves = movesOfASquare(!isGold, bitboards, shift-1, pushes); 
-                            for (int j = 0; j < pushes; j++){
-                                *(moves + i) = *(pushMoves + j);
-                                *(moves + i + 1) = conMove(isGold,p,shift%8,shift/8,'w');
-                                i+=2;
-                            }
-                            free(pushMoves);
+                    free(pushMoves);
+            }
+            if((piece >> 1 != 0L) &&
+                ((piece >> 1) & *(bitboards+p+5) & ~lEdge) == (piece >> 1)){
+                    int pushes = numberOfMovesForSquare(!isGold, shift-1);
+                    uint16_t *pushMoves = movesOfASquare(!isGold, bitboards, shift-1, pushes); 
+                    for (int j = 0; j < pushes; j++){
+                        *(moves + i) = *(pushMoves + j);
+                        *(moves + i + 1) = conMove(isGold,p,shift%8,shift/8,'w');
+                        i+=2;
                     }
-                    if((piece << 1 != 0L) &&
-                        ((piece << 1) & *(bitboards+p+5) & ~rEdge) == (piece << 1)){
-                            int pushes = numberOfMovesForSquare(!isGold, shift+1);
-                            uint16_t *pushMoves = movesOfASquare(!isGold, bitboards, shift+1, pushes); 
-                            for (int j = 0; j < pushes; j++){
-                                *(moves + i) = *(pushMoves + j);
-                                *(moves + i + 1) = conMove(isGold,p,shift%8,shift/8,'e');
-                                i+=2;
-                            }
-                            free(pushMoves);
+                    free(pushMoves);
+            }
+            if((piece << 1 != 0L) &&
+                ((piece << 1) & *(bitboards+p+5) & ~rEdge) == (piece << 1)){
+                    int pushes = numberOfMovesForSquare(!isGold, shift+1);
+                    uint16_t *pushMoves = movesOfASquare(!isGold, bitboards, shift+1, pushes); 
+                    for (int j = 0; j < pushes; j++){
+                        *(moves + i) = *(pushMoves + j);
+                        *(moves + i + 1) = conMove(isGold,p,shift%8,shift/8,'e');
+                        i+=2;
                     }
-                    if((piece << 8 != 0L) &&
-                        ((piece << 8) & *(bitboards+p+5)) == (piece << 8)){
-                            int pushes = numberOfMovesForSquare(!isGold, shift+8);
-                            uint16_t *pushMoves = movesOfASquare(!isGold, bitboards, shift+8, pushes); 
-                            for (int j = 0; j<pushes; j++){
-                                *(moves + i) = *(pushMoves  +j);
-                                *(moves + i + 1) = conMove(isGold,p,shift%8,shift/8,'s');
-                                i+=2;
-                            }
-                            free(pushMoves);
-                    } 
-                }
+                    free(pushMoves);
+            }
+            if((piece << 8 != 0L) &&
+                ((piece << 8) & *(bitboards+p+5)) == (piece << 8)){
+                    int pushes = numberOfMovesForSquare(!isGold, shift+8);
+                    uint16_t *pushMoves = movesOfASquare(!isGold, bitboards, shift+8, pushes); 
+                    for (int j = 0; j<pushes; j++){
+                        *(moves + i) = *(pushMoves  +j);
+                        *(moves + i + 1) = conMove(isGold,p,shift%8,shift/8,'s');
+                        i+=2;
+                    }
+                    free(pushMoves);
             }
         }
     }
     for(int i = (numOfMoves + numOfPushes); i < size;){//pull
         /*if numOfPulls and numOfPushes is 0 then the for loop breaks right away
           because numOfMoves = size*/
-        for (int p = 1; p < 6; p++){
-            for (int shift = 0; shift < 64; shift++){
-                uint64_t square = 1L << shift;
-                uint64_t piece = 0L;
-                if (isGold)
-                    piece = square & ARIMAABOARD.gold[p];
-                else
-                    piece = square & ARIMAABOARD.silver[p];
 
-                if (piece == square){
-                    if((piece >> 8 != 0L) &&
-                        ((piece >> 8) & *(bitboards + p + 10)) == (piece >> 8)){
-                            int pulls = numberOfMovesToSquare(!isGold, shift);
-                            uint16_t *pullMoves = movesToASquare(!isGold, bitboards, shift, pulls);
-                            for (int j = 0; j < pulls; j++){
-                                *(moves + i) = conMove(isGold, p, shift%8, shift/8, 'n');
-                                *(moves + i + 1) = *(pullMoves + j);
-                                i += 2;
-                            }
-                            free(pullMoves);
-                    }
-                    if((piece >> 1 != 0L) &&
-                        ((piece >> 1) & *(bitboards + p + 10) & ~lEdge) == (piece >> 1)){
-                            int pulls = numberOfMovesToSquare(!isGold, shift);
-                            uint16_t *pullMoves = movesToASquare(!isGold, bitboards, shift, pulls);
-                            for (int j = 0; j < pulls; j++){
-                                *(moves + i) = conMove(isGold, p, shift%8, shift/8, 'w');
-                                *(moves + i + 1) = *(pullMoves + j);
-                                i += 2;
-                            }
-                            free(pullMoves);
-                    }
-                    if((piece << 1 != 0L) &&
-                        ((piece << 1) & *(bitboards + p + 10) & ~rEdge) == (piece << 1)){
-                            int pulls = numberOfMovesToSquare(!isGold, shift);
-                            uint16_t *pullMoves = movesToASquare(!isGold, bitboards, shift, pulls);
-                            for (int j = 0; j < pulls; j++){
-                                *(moves + i) = conMove(isGold, p, shift%8, shift/8, 'e');
-                                *(moves + i + 1) = *(pullMoves + j);
-                                i += 2;
-                            }
-                            free(pullMoves);
-                    }
-                    if((piece << 8 != 0L) &&
-                        ((piece << 8) & *(bitboards + p + 10)) == (piece << 8)){
-                            int pulls = numberOfMovesToSquare(!isGold, shift);
-                            uint16_t *pullMoves = movesToASquare(!isGold, bitboards, shift, pulls);
-                            for (int j = 0; j<pulls; j++){
-                                *(moves + i) = conMove(isGold, p, shift%8, shift/8, 's');
-                                *(moves + i + 1) = *(pullMoves + j);
-                                i += 2;
-                            } 
-                            free(pullMoves);
-                    }
-                    
-                }
+        for (int index = 8; index < 16; index++){
+            uint64_t piece = 0L;
+            int p = ARIMAABOARD.pieceIndexes[index];
+            int shift = 0; 
+            if (isGold){
+                shift = ARIMAABOARD.goldPositions[index];
+                if (shift == 64)
+                    continue;
+                piece = ARIMAABOARD.gold[p] & (1L << shift);
             }
+            else{
+                shift = ARIMAABOARD.silverPositions[index];
+                if (shift == 64)
+                    continue;
+                piece = ARIMAABOARD.silver[p] & (1L << shift);
+            }
+
+            if (piece == 0){
+                printf("miss match\n");
+                exit(1);
+            }
+
+            if((piece >> 8 != 0L) &&
+                ((piece >> 8) & *(bitboards + p + 10)) == (piece >> 8)){
+                    int pulls = numberOfMovesToSquare(!isGold, shift);
+                    uint16_t *pullMoves = movesToASquare(!isGold, bitboards, shift, pulls);
+                    for (int j = 0; j < pulls; j++){
+                        *(moves + i) = conMove(isGold, p, shift%8, shift/8, 'n');
+                        *(moves + i + 1) = *(pullMoves + j);
+                        i += 2;
+                    }
+                    free(pullMoves);
+            }
+            if((piece >> 1 != 0L) &&
+                ((piece >> 1) & *(bitboards + p + 10) & ~lEdge) == (piece >> 1)){
+                    int pulls = numberOfMovesToSquare(!isGold, shift);
+                    uint16_t *pullMoves = movesToASquare(!isGold, bitboards, shift, pulls);
+                    for (int j = 0; j < pulls; j++){
+                        *(moves + i) = conMove(isGold, p, shift%8, shift/8, 'w');
+                        *(moves + i + 1) = *(pullMoves + j);
+                        i += 2;
+                    }
+                    free(pullMoves);
+            }
+            if((piece << 1 != 0L) &&
+                ((piece << 1) & *(bitboards + p + 10) & ~rEdge) == (piece << 1)){
+                    int pulls = numberOfMovesToSquare(!isGold, shift);
+                    uint16_t *pullMoves = movesToASquare(!isGold, bitboards, shift, pulls);
+                    for (int j = 0; j < pulls; j++){
+                        *(moves + i) = conMove(isGold, p, shift%8, shift/8, 'e');
+                        *(moves + i + 1) = *(pullMoves + j);
+                        i += 2;
+                    }
+                    free(pullMoves);
+            }
+            if((piece << 8 != 0L) &&
+                ((piece << 8) & *(bitboards + p + 10)) == (piece << 8)){
+                    int pulls = numberOfMovesToSquare(!isGold, shift);
+                    uint16_t *pullMoves = movesToASquare(!isGold, bitboards, shift, pulls);
+                    for (int j = 0; j<pulls; j++){
+                        *(moves + i) = conMove(isGold, p, shift%8, shift/8, 's');
+                        *(moves + i + 1) = *(pullMoves + j);
+                        i += 2;
+                    } 
+                    free(pullMoves);
+            }
+            
         }
     }
+
     return moves;
 }
 
@@ -1467,87 +1549,100 @@ int undoTraps(uint16_t updatedTraps){
         if (test == (RTRAPPED << 4*i)){
             ARIMAABOARD.gold[RABBIT] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
-            ARIMAABOARD.gMaterial += ARIMAABOARD.weights[0];
+            setupArray(true, RABBIT, squares[i]);
+            ARIMAABOARD.gMaterial += ARIMAABOARD.weights[RABBIT];
             continue;
         }
 
         if (test == (CTRAPPED << 4*i)){
             ARIMAABOARD.gold[CAT] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
-            ARIMAABOARD.gMaterial += ARIMAABOARD.weights[1];
+            setupArray(true, CAT, squares[i]);
+            ARIMAABOARD.gMaterial += ARIMAABOARD.weights[CAT];
             continue;
         }
 
         if (test == (DTRAPPED << 4*i)){
             ARIMAABOARD.gold[DOG] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
-            ARIMAABOARD.gMaterial += ARIMAABOARD.weights[2];
+            setupArray(true, DOG, squares[i]);
+            ARIMAABOARD.gMaterial += ARIMAABOARD.weights[DOG];
             continue;
         }
 
         if (test == (HTRAPPED << 4*i)){
             ARIMAABOARD.gold[HORSE] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
-            ARIMAABOARD.gMaterial += ARIMAABOARD.weights[3];
+            setupArray(true, HORSE, squares[i]);
+            ARIMAABOARD.gMaterial += ARIMAABOARD.weights[HORSE];
             continue;
         }
 
         if (test == (MTRAPPED << 4*i)){
             ARIMAABOARD.gold[CAMMEL] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
-            ARIMAABOARD.gMaterial += ARIMAABOARD.weights[4];
+            setupArray(true, CAMMEL, squares[i]);
+            ARIMAABOARD.gMaterial += ARIMAABOARD.weights[CAMMEL];
             continue;
         }
 
         if (test == (ETRAPPED << 4*i)){
             ARIMAABOARD.gold[ELEPHANT] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
-            ARIMAABOARD.gMaterial += ARIMAABOARD.weights[5];
+            setupArray(true, ELEPHANT, squares[i]);
+            ARIMAABOARD.gMaterial += ARIMAABOARD.weights[ELEPHANT];
             continue;
         }
 
         if (test == (rTRAPPED << 4*i)){
             ARIMAABOARD.silver[RABBIT] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
-            ARIMAABOARD.sMaterial += ARIMAABOARD.weights[0];
+            setupArray(false, RABBIT, squares[i]);
+            ARIMAABOARD.sMaterial += ARIMAABOARD.weights[RABBIT];
             continue;
         }
 
         if (test == (cTRAPPED << 4*i)){
             ARIMAABOARD.silver[CAT] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
-            ARIMAABOARD.sMaterial += ARIMAABOARD.weights[1];
+            setupArray(false, CAT, squares[i]);
+            ARIMAABOARD.sMaterial += ARIMAABOARD.weights[CAT];
             continue;
         }
 
         if (test == (dTRAPPED << 4*i)){
             ARIMAABOARD.silver[DOG] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
-            ARIMAABOARD.sMaterial += ARIMAABOARD.weights[2];
+            setupArray(false, DOG, squares[i]);
+            ARIMAABOARD.sMaterial += ARIMAABOARD.weights[DOG];
             continue;
         }
 
         if (test == (hTRAPPED << 4*i)){
             ARIMAABOARD.silver[HORSE] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
-            ARIMAABOARD.sMaterial += ARIMAABOARD.weights[3];
+            setupArray(false, HORSE, squares[i]);
+            ARIMAABOARD.sMaterial += ARIMAABOARD.weights[HORSE];
             continue;
         }
 
         if (test == (mTRAPPED << 4*i)){
             ARIMAABOARD.silver[CAMMEL] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
-            ARIMAABOARD.sMaterial += ARIMAABOARD.weights[4];
+            setupArray(false, CAMMEL, squares[i]);
+            ARIMAABOARD.sMaterial += ARIMAABOARD.weights[CAMMEL];
             continue;
         }
 
         if (test == (eTRAPPED << 4*i)){
             ARIMAABOARD.silver[ELEPHANT] ^= (1L << squares[i]);
             ARIMAABOARD.empty ^= (1L << squares[i]);
-            ARIMAABOARD.sMaterial += ARIMAABOARD.weights[5];
+            setupArray(false, ELEPHANT, squares[i]);
+            ARIMAABOARD.sMaterial += ARIMAABOARD.weights[ELEPHANT];
             continue;
         }
-
+        printf("Error in undoinging traps\n");
+        exit(1);
     }
     return 0;
 }
@@ -1560,360 +1655,322 @@ int generateMoves(bool isGold, uint16_t *moves, int movesLeft, struct Hash *move
     //getchar();
     if (movesLeft == 0){ //end case
         insertEntry(moves, moveHash);
-        //for (int i = 0; i < 4; i++)
-            //printMove(moves[i]);
-        //printf("\n");
-        //printBoard();
         return 0;
     }
+
+    if (movesLeft < 0){
+        printf("moves left is negative\n");
+        exit(1);
+    }
+
     uint64_t *bitboards = generateMoveBitboards(isGold);
-    int numOfMoves = numberOfMoves(bitboards, isGold);
-    int numOfPushes = 0;
-    int numOfPulls = 0;
-    if (movesLeft >= 2){
-        numOfPushes = 2*numberOfPushes(bitboards, isGold);
-        numOfPulls = 2*numberOfPulls(bitboards, isGold);
-    }
-    int size = numOfMoves + numOfPushes + numOfPulls;
-    if (size == 0){
-        free(bitboards);
-        return 0;
-    }
-    for(int i = 0; i < numOfMoves;){//move
-        for (int p = 0; p < 6; p++){
-            for (int shift = 0; shift < 64; shift++){
-                uint64_t square = 1L << shift;
-                uint64_t piece = 0L;
-                if (isGold)
-                    piece = square & ARIMAABOARD.gold[p];
-                else
-                    piece = square & ARIMAABOARD.silver[p];
 
-                if (piece == square){
-                    if((piece >> 8 != 0L) &&
-                        !(p == 0 && !isGold) &&
-                        ((piece >> 8) & *(bitboards+p)) == (piece >> 8)){
-
-                            uint16_t lastMove = conMove(isGold,p,shift%8,shift/8,'n');
-                            updateBoardBit(lastMove);
-                            uint16_t updatedTraps = updateTraps();
-                            moves[4-movesLeft] = lastMove;
-                            //make move
-
-                            generateMoves(isGold, moves, movesLeft-1, moveHash);
-                            //recursive call
-
-                            undoTraps(updatedTraps);
-                            undoMove(lastMove);
-                            //undo move
-                            
-                            i++;
-                    }
-                    if((piece >> 1 != 0L) &&
-                        ((piece >> 1) & *(bitboards+p) & ~lEdge) == (piece >> 1)){
-
-                            uint16_t lastMove = conMove(isGold,p,shift%8,shift/8,'w');
-                            updateBoardBit(lastMove);
-                            uint16_t updatedTraps = updateTraps();
-                            moves[4-movesLeft] = lastMove;
-
-                            generateMoves(isGold, moves, movesLeft-1, moveHash);
-
-                            undoTraps(updatedTraps);
-                            undoMove(lastMove);         
-
-                            i++;
-                    }
-                    if((piece << 1 != 0L) &&
-                        ((piece << 1) & *(bitboards+p) & ~rEdge) == (piece << 1)){
-
-                            uint16_t lastMove = conMove(isGold,p,shift%8,shift/8,'e');
-                            updateBoardBit(lastMove);
-                            uint16_t updatedTraps = updateTraps();
-                            moves[4-movesLeft] = lastMove;
-
-                            generateMoves(isGold, moves, movesLeft-1, moveHash);
-
-                            undoTraps(updatedTraps);
-                            undoMove(lastMove);
-                            
-                            i++;
-                    }
-                    if((piece << 8 != 0L) &&
-                        !(p == 0 && isGold) &&
-                        ((piece << 8) & *(bitboards+p)) == (piece << 8)){
-
-                            uint16_t lastMove = conMove(isGold,p,shift%8,shift/8,'s');
-                            updateBoardBit(lastMove);
-                            uint16_t updatedTraps = updateTraps();
-                            moves[4-movesLeft] = lastMove;
-
-                            generateMoves(isGold, moves, movesLeft-1, moveHash);
-
-                            undoTraps(updatedTraps);
-                            undoMove(lastMove);
-                            
-                            i++;
-                    }
-                }
-            }
+    //move
+    for (int index = 0; index < 16; index++){
+        uint64_t piece = 0L;
+        int p = ARIMAABOARD.pieceIndexes[index];
+        int shift = 0; 
+        if (isGold){
+            shift = ARIMAABOARD.goldPositions[index];
+            if (shift == 64)
+                continue;
+            piece = ARIMAABOARD.gold[p] & (1L << shift);
         }
-    }
-    for(int i = numOfMoves; i < (size - numOfPulls);){//push
-        for (int p = 1; p < 6; p++){
-            for (int shift = 0; shift < 64; shift++){
-                uint64_t square = 1L << shift;
-                uint64_t piece = 0L;
-                if (isGold)
-                    piece = square & ARIMAABOARD.gold[p];
-                else
-                    piece = square & ARIMAABOARD.silver[p];
-
-                if (piece == square){
-                    if((piece >> 8 != 0L) &&
-                        ((piece >> 8) & *(bitboards+p+5)) == (piece >> 8)){
-                            int pushes = numberOfMovesForSquare(!isGold, shift-8);
-                            uint16_t *pushMoves = movesOfASquare(!isGold, bitboards, shift-8, pushes); 
-                            for (int j = 0; j  < pushes; j++){
-
-                                uint16_t lastMove = *(pushMoves + j);
-                                updateBoardBit(lastMove);
-                                uint16_t updatedTraps = updateTraps();
-                                moves[4-movesLeft] = lastMove;
-
-                                uint16_t lastMove2 = conMove(isGold,p,shift%8,shift/8,'n');
-                                updateBoardBit(lastMove2);
-                                uint16_t updatedTraps2 = updateTraps();
-                                moves[4-movesLeft+1] = lastMove2;
-
-                                generateMoves(isGold, moves, movesLeft-2, moveHash);
-
-                                undoTraps(updatedTraps2);
-                                undoMove(lastMove2);
-                                
-                                undoTraps(updatedTraps);
-                                undoMove(lastMove);
-                                i += 2;
-                            }
-                            free(pushMoves);
-                    }
-                    if((piece >> 1 != 0L) &&
-                        ((piece >> 1) & *(bitboards+p+5) & ~lEdge) == (piece >> 1)){
-                            int pushes = numberOfMovesForSquare(!isGold, shift-1);
-                            uint16_t *pushMoves = movesOfASquare(!isGold, bitboards, shift-1, pushes); 
-                            for (int j = 0; j < pushes; j++){
-
-                                uint16_t lastMove = *(pushMoves + j);
-                                updateBoardBit(lastMove);
-                                uint16_t updatedTraps = updateTraps();
-                                moves[4-movesLeft] = lastMove;
-
-                                uint16_t lastMove2 = conMove(isGold,p,shift%8,shift/8,'w');
-                                updateBoardBit(lastMove2);
-                                uint16_t updatedTraps2 = updateTraps();
-                                moves[4-movesLeft+1] = lastMove2;\
-
-                                generateMoves(isGold, moves, movesLeft-2, moveHash);
-
-                                undoTraps(updatedTraps2);
-                                undoMove(lastMove2);
-
-                                undoTraps(updatedTraps);
-                                undoMove(lastMove);
-                                i += 2;
-                            }
-                            free(pushMoves);
-                    }
-                    if((piece << 1 != 0L) &&
-                        ((piece << 1) & *(bitboards+p+5) & ~rEdge) == (piece << 1)){
-                            int pushes = numberOfMovesForSquare(!isGold, shift+1);
-                            uint16_t *pushMoves = movesOfASquare(!isGold, bitboards, shift+1, pushes); 
-                            for (int j = 0; j < pushes; j++){
-
-                                uint16_t lastMove = *(pushMoves + j);
-                                updateBoardBit(lastMove);
-                                uint16_t updatedTraps = updateTraps();
-                                moves[4-movesLeft] = lastMove;
-
-                                uint16_t lastMove2 = conMove(isGold,p,shift%8,shift/8,'e');
-                                updateBoardBit(lastMove2);
-                                uint16_t updatedTraps2 = updateTraps();
-                                moves[4-movesLeft+1] = lastMove2;\
-
-                                generateMoves(isGold, moves, movesLeft-2, moveHash);
-
-                                undoTraps(updatedTraps2);
-                                undoMove(lastMove2);
-
-                                undoTraps(updatedTraps);
-                                undoMove(lastMove);
-
-                                i += 2;
-                            }
-                            free(pushMoves);
-                    }
-                    if((piece << 8 != 0L) &&
-                        ((piece << 8) & *(bitboards+p+5)) == (piece << 8)){
-                            int pushes = numberOfMovesForSquare(!isGold, shift+8);
-                            uint16_t *pushMoves = movesOfASquare(!isGold, bitboards, shift+8, pushes); 
-                            for (int j = 0; j<pushes; j++){
-
-                                uint16_t lastMove = *(pushMoves + j);
-                                updateBoardBit(lastMove);
-                                uint16_t updatedTraps = updateTraps();
-                                moves[4-movesLeft] = lastMove;
-
-                                uint16_t lastMove2 = conMove(isGold,p,shift%8,shift/8,'s');
-                                updateBoardBit(lastMove2);
-                                uint16_t updatedTraps2 = updateTraps();
-                                moves[4-movesLeft+1] = lastMove2;
-
-                                generateMoves(isGold, moves, movesLeft-2, moveHash);
-
-                                undoTraps(updatedTraps2);
-                                undoMove(lastMove2);
-
-                                undoTraps(updatedTraps);
-                                undoMove(lastMove);
-
-                                i += 2;
-                            }
-                            free(pushMoves);
-                    } 
-                }
-            }
+        else{
+            shift = ARIMAABOARD.silverPositions[index];
+            if (shift == 64)
+                continue;
+            piece = ARIMAABOARD.silver[p] & (1L << shift);
         }
-    }
-    for(int i = (numOfMoves + numOfPushes); i < size;){//pull
-        for (int p = 1; p < 6; p++){
-            for (int shift = 0; shift < 64; shift++){
-                uint64_t square = 1L << shift;
-                uint64_t piece = 0L;
-                if (isGold)
-                    piece = square & ARIMAABOARD.gold[p];
-                else
-                    piece = square & ARIMAABOARD.silver[p];
 
-                if (piece == square){
-                    if((piece >> 8 != 0L) &&
-                        ((piece >> 8) & *(bitboards + p + 10)) == (piece >> 8)){
-                            int pulls = numberOfMovesToSquare(!isGold, shift);
-                            uint16_t *pullMoves = movesToASquare(!isGold, bitboards, shift, pulls);
-                            for (int j = 0; j < pulls; j++){
+        if (piece == 0L){
+            printf("miss match\n");
+            exit(1);
+        }
 
-                                uint16_t lastMove = conMove(isGold, p, shift%8, shift/8, 'n');
-                                updateBoardBit(lastMove);
-                                uint16_t updatedTraps = updateTraps();
-                                moves[4-movesLeft] = lastMove;
+        if((piece >> 8 != 0L) &&
+            !(p == 0 && !isGold) &&
+            ((piece >> 8) & *(bitboards+p)) == (piece >> 8)){
 
-                                uint16_t lastMove2 = *(pullMoves + j);
-                                updateBoardBit(lastMove2);
-                                uint16_t updatedTraps2 = updateTraps();
-                                moves[4-movesLeft+1] = lastMove2;
-                                
+                uint16_t lastMove = conMove(isGold,p,shift%8,shift/8,'n');
+                updateBoardBit(lastMove);
+                uint16_t updatedTraps = updateTraps();
+                moves[4-movesLeft] = lastMove;
+                //make move
 
-                                generateMoves(isGold, moves, movesLeft-2, moveHash);
+                generateMoves(isGold, moves, movesLeft-1, moveHash);
+                //recursive call
 
-                                undoTraps(updatedTraps2);
-                                undoMove(lastMove2);
+                undoTraps(updatedTraps);
+                undoMove(lastMove);
+                //undo move
+                
+        }
+        if((piece >> 1 != 0L) &&
+            ((piece >> 1) & *(bitboards+p) & ~lEdge) == (piece >> 1)){
 
-                                undoTraps(updatedTraps);
-                                undoMove(lastMove);
-                                
-                                i += 2;
-                            }
-                            free(pullMoves);
-                    }
-                    if((piece >> 1 != 0L) &&
-                        ((piece >> 1) & *(bitboards + p + 10) & ~lEdge) == (piece >> 1)){
-                            int pulls = numberOfMovesToSquare(!isGold, shift);
-                            uint16_t *pullMoves = movesToASquare(!isGold, bitboards, shift, pulls);
-                            for (int j = 0; j < pulls; j++){
+                uint16_t lastMove = conMove(isGold,p,shift%8,shift/8,'w');
+                updateBoardBit(lastMove);
+                uint16_t updatedTraps = updateTraps();
+                moves[4-movesLeft] = lastMove;
 
-                                uint16_t lastMove = conMove(isGold, p, shift%8, shift/8, 'w');
-                                updateBoardBit(lastMove);
-                                uint16_t updatedTraps = updateTraps();
-                                moves[4-movesLeft] = lastMove;
+                generateMoves(isGold, moves, movesLeft-1, moveHash);
 
-                                uint16_t lastMove2 = *(pullMoves + j);
-                                updateBoardBit(lastMove2);
-                                uint16_t updatedTraps2 = updateTraps();
-                                moves[4-movesLeft+1] = lastMove2;
+                undoTraps(updatedTraps);
+                undoMove(lastMove);
+        }
+        if((piece << 1 != 0L) &&
+            ((piece << 1) & *(bitboards+p) & ~rEdge) == (piece << 1)){
 
-                                generateMoves(isGold, moves, movesLeft-2, moveHash);
+                uint16_t lastMove = conMove(isGold,p,shift%8,shift/8,'e');
+                updateBoardBit(lastMove);
+                uint16_t updatedTraps = updateTraps();
+                moves[4-movesLeft] = lastMove;
 
-                                undoTraps(updatedTraps2);
-                                undoMove(lastMove2);
+                generateMoves(isGold, moves, movesLeft-1, moveHash);
 
-                                undoTraps(updatedTraps);
-                                undoMove(lastMove);
-                                
-                                i += 2;
-                            }
-                            free(pullMoves);
-                    }
-                    if((piece << 1 != 0L) &&
-                        ((piece << 1) & *(bitboards + p + 10) & ~rEdge) == (piece << 1)){
-                            int pulls = numberOfMovesToSquare(!isGold, shift);
-                            uint16_t *pullMoves = movesToASquare(!isGold, bitboards, shift, pulls);
-                            for (int j = 0; j < pulls; j++){
+                undoTraps(updatedTraps);
+                undoMove(lastMove);
+        }
+        if((piece << 8 != 0L) &&
+            !(p == 0 && isGold) &&
+            ((piece << 8) & *(bitboards+p)) == (piece << 8)){
 
-                                uint16_t lastMove = conMove(isGold, p, shift%8, shift/8, 'e');
-                                updateBoardBit(lastMove);
-                                uint16_t updatedTraps = updateTraps();
-                                moves[4-movesLeft] = lastMove;
+                uint16_t lastMove = conMove(isGold,p,shift%8,shift/8,'s');
+                updateBoardBit(lastMove);
+                uint16_t updatedTraps = updateTraps();
+                moves[4-movesLeft] = lastMove;
 
-                                uint16_t lastMove2 = *(pullMoves + j);
-                                updateBoardBit(lastMove2);
-                                uint16_t updatedTraps2 = updateTraps();
-                                moves[4-movesLeft+1] = lastMove2;
-                                
+                generateMoves(isGold, moves, movesLeft-1, moveHash);
 
-                                generateMoves(isGold, moves, movesLeft-2, moveHash);
+                undoTraps(updatedTraps);
+                undoMove(lastMove);
+        }
+        
+        if (p == 0 || movesLeft-2 < 0)
+            continue;
+        
+        //pushes
+        if((piece >> 8 != 0L) &&
+            ((piece >> 8) & *(bitboards+p+5)) == (piece >> 8)){
+                int pushes = numberOfMovesForSquare(!isGold, shift-8);
+                uint16_t *pushMoves = movesOfASquare(!isGold, bitboards, shift-8, pushes);
+                for (int j = 0; j  < pushes; j++){
 
-                                undoTraps(updatedTraps2);
-                                undoMove(lastMove2);
+                    uint16_t lastMove = *(pushMoves + j);
+                    uint16_t lastMove2 = conMove(isGold,p,shift%8,shift/8,'n');
+                    updateBoardBit(lastMove);
+                    updateBoardBit(lastMove2);
 
-                                undoTraps(updatedTraps);
-                                undoMove(lastMove);
-                                
-                                i += 2;
-                            }
-                            free(pullMoves);
-                    }
-                    if((piece << 8 != 0L) &&
-                        ((piece << 8) & *(bitboards + p + 10)) == (piece << 8)){
-                            int pulls = numberOfMovesToSquare(!isGold, shift);
-                            uint16_t *pullMoves = movesToASquare(!isGold, bitboards, shift, pulls);
-                            for (int j = 0; j<pulls; j++){
+                    uint16_t updatedTraps = updateTraps();
+                    uint16_t updatedTraps2 = updateTraps();
 
-                                uint16_t lastMove = conMove(isGold, p, shift%8, shift/8, 's');
-                                updateBoardBit(lastMove);
-                                uint16_t updatedTraps = updateTraps();
-                                moves[4-movesLeft] = lastMove;
+                    moves[4-movesLeft] = lastMove;
+                    moves[4-movesLeft+1] = lastMove2;
 
-                                uint16_t lastMove2 = *(pullMoves + j);
-                                updateBoardBit(lastMove2);
-                                uint16_t updatedTraps2 = updateTraps();
-                                moves[4-movesLeft+1] = lastMove2;
+                    generateMoves(isGold, moves, movesLeft-2, moveHash);
 
-                                generateMoves(isGold, moves, movesLeft-2, moveHash);
+                    undoTraps(updatedTraps2);                                
+                    undoTraps(updatedTraps);
 
-                                undoTraps(updatedTraps2);
-                                undoMove(lastMove2);
+                    undoMove(lastMove2);
+                    undoMove(lastMove);
+                }
+                free(pushMoves);
+        }
+        if((piece >> 1 != 0L) &&
+            ((piece >> 1) & *(bitboards+p+5) & ~lEdge) == (piece >> 1)){
+                int pushes = numberOfMovesForSquare(!isGold, shift-1);
+                uint16_t *pushMoves = movesOfASquare(!isGold, bitboards, shift-1, pushes); 
+                for (int j = 0; j < pushes; j++){
 
-                                undoTraps(updatedTraps);
-                                undoMove(lastMove);
-                                
-                                i += 2;
-                            } 
-                            free(pullMoves);
-                    }
+                    uint16_t lastMove = *(pushMoves + j);
+                    uint16_t lastMove2 = conMove(isGold,p,shift%8,shift/8,'w');
+                    updateBoardBit(lastMove);
+                    updateBoardBit(lastMove2);
+
+                    uint16_t updatedTraps = updateTraps();
+                    uint16_t updatedTraps2 = updateTraps();
+
+                    moves[4-movesLeft] = lastMove;
+                    moves[4-movesLeft+1] = lastMove2;
+
+                    generateMoves(isGold, moves, movesLeft-2, moveHash);
+
+                    undoTraps(updatedTraps2);                                
+                    undoTraps(updatedTraps);
+
+                    undoMove(lastMove2);
+                    undoMove(lastMove);
+                }
+                free(pushMoves);
+        }
+        if((piece << 1 != 0L) &&
+            ((piece << 1) & *(bitboards+p+5) & ~rEdge) == (piece << 1)){
+                int pushes = numberOfMovesForSquare(!isGold, shift+1);
+                uint16_t *pushMoves = movesOfASquare(!isGold, bitboards, shift+1, pushes); 
+                for (int j = 0; j < pushes; j++){
+
+                    uint16_t lastMove = *(pushMoves + j);
+                    uint16_t lastMove2 = conMove(isGold,p,shift%8,shift/8,'e');
+                    updateBoardBit(lastMove);
+                    updateBoardBit(lastMove2);
+
+                    uint16_t updatedTraps = updateTraps();
+                    uint16_t updatedTraps2 = updateTraps();
+
+                    moves[4-movesLeft] = lastMove;
+                    moves[4-movesLeft+1] = lastMove2;
+
+                    generateMoves(isGold, moves, movesLeft-2, moveHash);
+
+                    undoTraps(updatedTraps2);                                
+                    undoTraps(updatedTraps);
+
+                    undoMove(lastMove2);
+                    undoMove(lastMove);
+                }
+                free(pushMoves);
+        }
+        if((piece << 8 != 0L) &&
+            ((piece << 8) & *(bitboards+p+5)) == (piece << 8)){
+                int pushes = numberOfMovesForSquare(!isGold, shift+8);
+                uint16_t *pushMoves = movesOfASquare(!isGold, bitboards, shift+8, pushes); 
+                for (int j = 0; j < pushes; j++){
+
+                    uint16_t lastMove = *(pushMoves + j);
+                    uint16_t lastMove2 = conMove(isGold,p,shift%8,shift/8,'s');
+                    updateBoardBit(lastMove);
+                    updateBoardBit(lastMove2);
+
+                    uint16_t updatedTraps = updateTraps();
+                    uint16_t updatedTraps2 = updateTraps();
+
+                    moves[4-movesLeft] = lastMove;
+                    moves[4-movesLeft+1] = lastMove2;
+
+                    generateMoves(isGold, moves, movesLeft-2, moveHash);
+
+                    undoTraps(updatedTraps2);                                
+                    undoTraps(updatedTraps);
+
+                    undoMove(lastMove2);
+                    undoMove(lastMove);
+                }
+                free(pushMoves);
+        }
+        //pulls
+        if((piece >> 8 != 0L) &&
+            ((piece >> 8) & *(bitboards + p + 10)) == (piece >> 8)){
+                int pulls = numberOfMovesToSquare(!isGold, shift);
+                uint16_t *pullMoves = movesToASquare(!isGold, bitboards, shift, pulls);
+                for (int j = 0; j < pulls; j++){
+
+                    uint16_t lastMove = conMove(isGold, p, shift%8, shift/8, 'n');
+                    uint16_t lastMove2 = *(pullMoves + j);
+                    updateBoardBit(lastMove);
+                    updateBoardBit(lastMove2);
+
+                    uint16_t updatedTraps = updateTraps();
+                    uint16_t updatedTraps2 = updateTraps();
+
+                    moves[4-movesLeft] = lastMove;
+                    moves[4-movesLeft+1] = lastMove2;
                     
+                    generateMoves(isGold, moves, movesLeft-2, moveHash);
+
+                    undoTraps(updatedTraps2);                                
+                    undoTraps(updatedTraps);
+
+                    undoMove(lastMove2);
+                    undoMove(lastMove);
                 }
-            }
+                free(pullMoves);
         }
+        if((piece >> 1 != 0L) &&
+            ((piece >> 1) & *(bitboards + p + 10) & ~lEdge) == (piece >> 1)){
+                int pulls = numberOfMovesToSquare(!isGold, shift);
+                uint16_t *pullMoves = movesToASquare(!isGold, bitboards, shift, pulls);
+                for (int j = 0; j < pulls; j++){
+
+                    uint16_t lastMove = conMove(isGold, p, shift%8, shift/8, 'w');
+                    uint16_t lastMove2 = *(pullMoves + j);
+                    updateBoardBit(lastMove);
+                    updateBoardBit(lastMove2);
+
+                    uint16_t updatedTraps = updateTraps();
+                    uint16_t updatedTraps2 = updateTraps();
+
+                    moves[4-movesLeft] = lastMove;
+                    moves[4-movesLeft+1] = lastMove2;
+
+                    generateMoves(isGold, moves, movesLeft-2, moveHash);
+
+                    undoTraps(updatedTraps2);                                
+                    undoTraps(updatedTraps);
+
+                    undoMove(lastMove2);
+                    undoMove(lastMove);
+                }
+                free(pullMoves);
+        }
+        if((piece << 1 != 0L) &&
+            ((piece << 1) & *(bitboards + p + 10) & ~rEdge) == (piece << 1)){
+                int pulls = numberOfMovesToSquare(!isGold, shift);
+                uint16_t *pullMoves = movesToASquare(!isGold, bitboards, shift, pulls);
+                for (int j = 0; j < pulls; j++){
+
+                    uint16_t lastMove = conMove(isGold, p, shift%8, shift/8, 'e');
+                    uint16_t lastMove2 = *(pullMoves + j);
+                    updateBoardBit(lastMove);
+                    updateBoardBit(lastMove2);
+
+                    uint16_t updatedTraps = updateTraps();
+                    uint16_t updatedTraps2 = updateTraps();
+
+                    moves[4-movesLeft] = lastMove;
+                    moves[4-movesLeft+1] = lastMove2;                                
+
+                    generateMoves(isGold, moves, movesLeft-2, moveHash);
+
+                    undoTraps(updatedTraps2);                                
+                    undoTraps(updatedTraps);
+
+                    undoMove(lastMove2);
+                    undoMove(lastMove);
+                }
+                free(pullMoves);
+        }
+        if((piece << 8 != 0L) &&
+            ((piece << 8) & *(bitboards + p + 10)) == (piece << 8)){
+                int pulls = numberOfMovesToSquare(!isGold, shift);
+                uint16_t *pullMoves = movesToASquare(!isGold, bitboards, shift, pulls);
+                for (int j = 0; j<pulls; j++){
+
+                    uint16_t lastMove = conMove(isGold, p, shift%8, shift/8, 's');
+                    uint16_t lastMove2 = *(pullMoves + j);
+                    updateBoardBit(lastMove);
+                    updateBoardBit(lastMove2);
+
+                    uint16_t updatedTraps = updateTraps();
+                    uint16_t updatedTraps2 = updateTraps();
+
+                    moves[4-movesLeft] = lastMove;
+                    moves[4-movesLeft+1] = lastMove2;
+
+                    generateMoves(isGold, moves, movesLeft-2, moveHash);
+
+                    undoTraps(updatedTraps2);                                
+                    undoTraps(updatedTraps);
+
+                    undoMove(lastMove2);
+                    undoMove(lastMove);
+                } 
+                free(pullMoves);
+        }
+    
     }
+    
     free(bitboards);
     return 0;
 }
@@ -1922,7 +1979,7 @@ int generateMoves(bool isGold, uint16_t *moves, int movesLeft, struct Hash *move
 
 struct Hash *branchHash(bool isGold){
     uint16_t *moves = calloc(4, sizeof(uint16_t));
-    struct Hash *moveHash = createHash(6011);
+    struct Hash *moveHash = createHash(51001);
     //large enough to all the unique moves
     generateMoves(isGold, moves, 4, moveHash); //initial recursive call
     //printf("number of elements in hash: %d\n", moveHash->numOfElements);
@@ -1984,9 +2041,10 @@ int negaMaxSearch(bool isGold, double tTime){
     int max = INT_MIN;
     uint16_t *maxMoves = calloc(4, sizeof(uint16_t));
     struct Hash *branches = branchHash(isGold);//makes all the moves
+    //printf("%d ", branches->numOfElements);
     int numOfElementsChecked = 0;
     printf(" 00");
-    for (int depth = 3; depth < 4; depth += 2){
+    for (int depth = 2; depth < 3; depth += 2){
         for (int i = 0; i < branches->size; i++){ 
             struct Entry *p = *(branches->entries + i);
             while(p != NULL){
@@ -2022,8 +2080,8 @@ int negaMaxSearch(bool isGold, double tTime){
         }
     }
     destroyHash(branches);
-    printf("\n");
-    //make moves and print them out
+    //printf("\n");
+    //make moves and prints them out
     for (int i = 0; i < 4; i++){ 
         updateBoardBit(*(maxMoves + i));
         updateTraps();
@@ -2051,11 +2109,11 @@ bool goldWin(bool isGold){
 }
 
 bool makeRandomMoves(bool isGold, int movesLeft){
+    //recursivaly makes random moves to play a random game.
     bool goldWon;
     if (!gameOver(isGold)){
         if (movesLeft == 0){
             goldWon = makeRandomMoves(!isGold, 4);
-
             return goldWon;
         }
 
@@ -2084,10 +2142,10 @@ bool makeRandomMoves(bool isGold, int movesLeft){
         if (randomIndex >= 0 && randomIndex < numOfMoves){
             uint16_t move = *(moves + randomIndex);
             free(moves);
-            //printf("move\n");
+
             updateBoardBit(move);
             uint16_t updatedTraps = updateTraps();
-            //printBoard();
+
             goldWon = makeRandomMoves(isGold, movesLeft-1);
 
             undoTraps(updatedTraps);
@@ -2101,17 +2159,17 @@ bool makeRandomMoves(bool isGold, int movesLeft){
             uint16_t move = *(moves + randomIndex);
             uint16_t move2 = *(moves + randomIndex + 1);
             free(moves);
-            //printf("push\n");
+
             updateBoardBit(move);
-            uint16_t updatedTraps = updateTraps();
             updateBoardBit(move2);
+            uint16_t updatedTraps = updateTraps();
             uint16_t updatedTraps2 = updateTraps();
 
             goldWon = makeRandomMoves(isGold, movesLeft-2);
 
             undoTraps(updatedTraps2);
-            undoMove(move2);
             undoTraps(updatedTraps);
+            undoMove(move2);
             undoMove(move);
         }
         else if (randomIndex >= (numOfMoves + numOfPushes) && randomIndex < size){
@@ -2123,15 +2181,15 @@ bool makeRandomMoves(bool isGold, int movesLeft){
             free(moves);
 
             updateBoardBit(move);
-            uint16_t updatedTraps = updateTraps();
             updateBoardBit(move2);
+            uint16_t updatedTraps = updateTraps();
             uint16_t updatedTraps2 = updateTraps();
 
             goldWon = makeRandomMoves(isGold, movesLeft-2);
 
             undoTraps(updatedTraps2);
-            undoMove(move2);
             undoTraps(updatedTraps);
+            undoMove(move2);
             undoMove(move);
         }
         return goldWon;
@@ -2143,7 +2201,9 @@ int monteCarloTS(bool isGold, double tTime){
     srand((unsigned) time(NULL));
     struct Hash *branches = branchHash(isGold);
     uint16_t **moves = malloc(branches->numOfElements * sizeof(uint16_t*));
-    int *gamesWon = calloc(branches->numOfElements, sizeof(int));
+    double *gamesWon = calloc(branches->numOfElements, sizeof(double));
+    double *gamesPlayed =  calloc(branches->numOfElements, sizeof(double));
+    //copies moves from the branch hash into an array
     int j = 0;
     for (int i = 0; i < branches->size; i++){
         struct Entry *p = *(branches->entries + i);
@@ -2156,50 +2216,63 @@ int monteCarloTS(bool isGold, double tTime){
             p = p->next;
         }
     }
-    //printf("moves copied\n");
+
     int numOfElements = branches->numOfElements;
     destroyHash(branches);
-    int maxGamesWon = 0;
+    //steps through each state and plays 10 games per state, playing then more 
+    //if the win percentage is 90%
+    double maxGamesWon = 0;
     int maxGamesWonIndex = 0;
     printf("000");
     for (int i = 0; i < numOfElements; i++){
-        //printf("move: %d\n", i);
         for (int game = 0; game < 10; game++){
-            //printf("\tgame: %d\n", j);
-            //printBoard();
             uint16_t updatedTraps[4];
             for (int j = 0; j < 4; j++){
                 updateBoardBit(*(*(moves + i) + j));
                 updatedTraps[j] = updateTraps();
             }
+            //checks if the game is won.
             if (gameOver(isGold) && (goldWin(isGold) == isGold)){
                 printf("\b\b\b");
-                printf("the game is mine ");
+                //printf("the game is mine ");
                 for (int j = 0; j < 4; j++)
                     printMove(*(*(moves + i) + j));
                 printf("\n");
+
                 for(int i = 0; i < numOfElements; i++)
                     free(*(moves + i));
                 free(moves);
                 free(gamesWon);
                 return 0;
             }
+
             bool goldWon = makeRandomMoves(!isGold, 4);
+
+            (*(gamesPlayed + i))++; //updates games played
+
             for (int j = 0; j < 4; j++){
                 undoTraps(updatedTraps[3 - j]);
-                undoMove(*(*(moves + i)+ (3 - j)));
+                undoMove(*(*(moves + i) + (3 - j)));
             }
-            if(goldWon == isGold){
+
+            if (goldWon == isGold)
                 (*(gamesWon + i))++;
-                if(*(gamesWon + i) > maxGamesWon){
-                    maxGamesWon = *(gamesWon + i);
-                    maxGamesWonIndex = i;
-                }
+        }
+
+        if ( (*(gamesWon + i)) / (*(gamesPlayed + i)) >= 0.9  && (*(gamesPlayed + i)) == 10){
+            i--;
+            continue;
+        }
+
+        if ((*(gamesWon + i))/(*(gamesPlayed + i)) >= maxGamesWon){
+            if (rand() % 2){
+                maxGamesWon = (*(gamesWon + i))/(*(gamesPlayed + i));
+                maxGamesWonIndex = i;
             }
         }
         printf("\b\b\b%03.0f", (double)i/(double)numOfElements*100);
     }
-    printf("\b\b\b");
+    printf("\b\b\b\n");
     for(int i = 0; i < 4; i++){
         updateBoardBit(*(*(moves + maxGamesWonIndex) + i));
         updateTraps();
