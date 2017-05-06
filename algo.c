@@ -2041,7 +2041,7 @@ int negaMaxSearch(bool isGold, double tTime){
     int max = INT_MIN;
     uint16_t *maxMoves = calloc(4, sizeof(uint16_t));
     struct Hash *branches = branchHash(isGold);//makes all the moves
-    printf("%d ", branches->numOfElements);
+    //printf("%d ", branches->numOfElements);
     int numOfElementsChecked = 0;
     printf(" 00");
     for (int depth = 2; depth < 3; depth += 2){
@@ -2080,7 +2080,7 @@ int negaMaxSearch(bool isGold, double tTime){
         }
     }
     destroyHash(branches);
-    printf("\n");
+    //printf("\n");
     //make moves and prints them out
     for (int i = 0; i < 4; i++){ 
         updateBoardBit(*(maxMoves + i));
@@ -2234,7 +2234,7 @@ int monteCarloTS(bool isGold, double tTime){
             //checks if the game is won.
             if (gameOver(isGold) && (goldWin(isGold) == isGold)){
                 printf("\b\b\b");
-                printf("the game is mine ");
+                //printf("the game is mine ");
                 for (int j = 0; j < 4; j++)
                     printMove(*(*(moves + i) + j));
                 printf("\n");
@@ -2272,7 +2272,7 @@ int monteCarloTS(bool isGold, double tTime){
         }
         printf("\b\b\b%03.0f", (double)i/(double)numOfElements*100);
     }
-    printf("\b\b\b");
+    printf("\b\b\b\n");
     for(int i = 0; i < 4; i++){
         updateBoardBit(*(*(moves + maxGamesWonIndex) + i));
         updateTraps();
