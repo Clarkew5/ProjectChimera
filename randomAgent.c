@@ -7,10 +7,10 @@ int randomAgent(bool isGold){
     while(movesLeft > 0){
         bitboards = generateMoveBitboards(isGold);
         typeOfMove = randomMovePushPull(bitboards, isGold, movesLeft);
-        /* randomMovePushPull returns 0 for move, 1 for push, 2 for pull, 
+        /* randomMovePushPull returns 0 for move, 1 for push, 2 for pull,
            3 for game over*/
         switch (typeOfMove){
-            case 0:     
+            case 0:
                 movesLeft--;
                 break;
             case 1:
@@ -22,8 +22,7 @@ int randomAgent(bool isGold){
                 exit(0);
         }
         updateTraps();
-  
-        //printBoard();
+
         free(bitboards);
         if(gameOver(isGold))
             break;
@@ -31,4 +30,3 @@ int randomAgent(bool isGold){
     printf("\n");
     return 0;
 }
-

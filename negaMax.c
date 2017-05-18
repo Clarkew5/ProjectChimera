@@ -8,7 +8,7 @@ int heuristic(bool isGold){
     /*the heuristic uses the forward movement of pieces, the nubmer of frozen,
       and a basic weight given to each piece. Frozen peices are multiplied by
       their wegiht so the agent focuses more on freezing stronger pieces.*/
-    
+
     for (int i = 0; i < 5; i++){
         numOfGFrozen += (ARIMAABOARD.weights[i] *
                          __builtin_popcountll(frozen(i, true)));
@@ -35,13 +35,12 @@ int negaMax(int depth, bool isGold, int A, int B, double tTime, time_t startTime
     }
     if (depth == 0){ //endcase
         int h = heuristic(isGold);
-        //int h = rand()%1000 + 1;
         return h;
     }
 
     int max = INT_MIN;
     struct Hash *branches = branchHash(isGold);//makes all the moves
-    for (int i = 0; i < branches->size; i++){ 
+    for (int i = 0; i < branches->size; i++){
         struct Entry *p = *(branches->entries + i);
         while(p != NULL){
             //steps through the hash function
@@ -81,11 +80,10 @@ int negaMaxSearch(bool isGold, double tTime){
     int max = INT_MIN;
     uint16_t *maxMoves = calloc(4, sizeof(uint16_t));
     struct Hash *branches = branchHash(isGold);//makes all the moves
-    //printf("%d ", branches->numOfElements);
     int numOfElementsChecked = 0;
     printf(" 00");
     for (int depth = 2; depth < 3; depth += 2){
-        for (int i = 0; i < branches->size; i++){ 
+        for (int i = 0; i < branches->size; i++){
             struct Entry *p = *(branches->entries + i);
             while(p != NULL){
                 //steps through the hash function
@@ -107,10 +105,8 @@ int negaMaxSearch(bool isGold, double tTime){
                     //printf("[");
                     for(int j = 0; j < 4; j++){
                        *(maxMoves + j) = *(p->move + j);
-                        //printMove(*(maxMoves + j));
                     }
-                    //printf("] h:%d\n", score);
-                        //copy max moves to maxMoves array
+                    //copy max moves to maxMoves array
                     max = score;
                 }
                 p = p->next;
@@ -120,14 +116,14 @@ int negaMaxSearch(bool isGold, double tTime){
         }
     }
     destroyHash(branches);
-    //printf("\n");
+    printf("\n");
     //make moves and prints them out
-    for (int i = 0; i < 4; i++){ 
+    for (int i = 0; i < 4; i++){
         updateBoardBit(*(maxMoves + i));
         updateTraps();
         printMove(*(maxMoves + i));
     }
     free(maxMoves);
-    printf("\n");  
+    printf("\n");
     return 0;
 }

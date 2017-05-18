@@ -579,10 +579,6 @@ int undoMove(uint16_t lastMove){
             printf("move corrupt\n");
             return 1;
     }
-    //printMove(lastMove);
-    //printf("-> ");
-    //printMove(move);
-    //printf("\n");
     updateBoardBit(move);
     return 0;
 }
